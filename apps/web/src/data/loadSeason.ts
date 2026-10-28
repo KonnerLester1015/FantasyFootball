@@ -1,5 +1,5 @@
 // apps/web's thin I/O wrapper: fetches a Sleeper league straight from the
-// browser and hands raw payloads to @sunday-funnies/core, which does every
+// browser and hands raw payloads to @fantasy-football/core, which does every
 // calculation. No backend, no persistence beyond a local player-dictionary
 // cache — a page load always recomputes from Sleeper's live data.
 
@@ -20,7 +20,7 @@ import {
   type SleeperDraftPick,
   type SleeperLeague,
   type SummaryDashboard,
-} from '@sunday-funnies/core';
+} from '@fantasy-football/core';
 import leagueConfig from '../../../../config/league.json';
 
 export interface Dashboards {

@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { motion } from 'motion/react';
-import type { CurrentDashboard, CurrentTeam } from '@sunday-funnies/core';
+import type { CurrentDashboard, CurrentTeam } from '@fantasy-football/core';
 import type { Dashboards } from '../data/loadSeason';
 import { DEF } from '../definitions';
 import { FieldGoal } from '../FieldGoal';

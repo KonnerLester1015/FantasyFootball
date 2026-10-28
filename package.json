@@ -1,5 +1,5 @@
 {
-  "name": "sunday-funnies",
+  "name": "fantasy-football",
   "version": "0.0.0",
   "private": true,
   "type": "module",
@@ -18,7 +18,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "build": "npm run build --workspaces --if-present",
-    "dev": "npm run dev --workspace @sunday-funnies/web",
+    "dev": "npm run dev --workspace @fantasy-football/web",
     "format": "prettier --write .",
     "format:check": "prettier --check ."
   },

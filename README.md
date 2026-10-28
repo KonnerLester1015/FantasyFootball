@@ -58,8 +58,8 @@ needed — there's nothing to configure; the app talks straight to Sleeper.
 To build or preview the static site:
 
 ```bash
-npm run build --workspace @sunday-funnies/web
-npm run preview --workspace @sunday-funnies/web
+npm run build --workspace @fantasy-football/web
+npm run preview --workspace @fantasy-football/web
 ```
 
 ## Verification

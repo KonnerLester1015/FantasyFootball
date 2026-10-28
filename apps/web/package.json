@@ -1,5 +1,5 @@
 {
-  "name": "@sunday-funnies/web",
+  "name": "@fantasy-football/web",
   "version": "0.0.0",
   "private": true,
   "type": "module",
@@ -11,7 +11,7 @@
     "typecheck": "tsc --noEmit -p tsconfig.json && tsc --noEmit -p tsconfig.node.json"
   },
   "dependencies": {
-    "@sunday-funnies/core": "*",
+    "@fantasy-football/core": "*",
     "motion": "^12.43.0",
     "react": "^19.3.0",
     "react-dom": "^19.3.0"

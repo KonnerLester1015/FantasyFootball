@@ -2,7 +2,7 @@
 // position, built from the site's own football and helmet. Decorative only —
 // the card's text and aria-label carry the meaning.
 
-import type { LeaderPosition } from '@family-feud/core';
+import type { LeaderPosition } from '@sunday-funnies/core';
 import type { JSX } from 'react';
 import { FootballShape, HelmetShape } from './ui';
 

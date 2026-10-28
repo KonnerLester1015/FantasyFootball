@@ -2,7 +2,7 @@
 // summary read model (packages/core metrics/leaders.ts). Nothing is ranked here.
 
 import { useSyncExternalStore } from 'react';
-import type { PositionLeaderCell, PositionLeadersWeek } from '@family-feud/core';
+import type { PositionLeaderCell, PositionLeadersWeek } from '@sunday-funnies/core';
 import { BounceCards } from '../BounceCards';
 import { pts } from '../format';
 import { PositionArt } from '../PositionArt';

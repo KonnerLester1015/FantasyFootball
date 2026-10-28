@@ -19,7 +19,7 @@ import type { SleeperLeague, SleeperRoster } from '../sleeper/types';
  *    finalized weeks and otherwise from every finalized league score, seeded
  *    by record %, PF, PA and then a coin. A sampled 0% or 100% is not proof.
  *
- * Ported call-for-call from reference/legacy/FamilyFeud_Redraft.gs:290-371,
+ * Ported call-for-call from reference/legacy/Redraft.gs:290-371,
  * including the order the random stream is consumed in (every team's tie coin,
  * then each game's two draws in schedule order), so one seed reproduces one
  * forecast.

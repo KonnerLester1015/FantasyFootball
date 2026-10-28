@@ -2,7 +2,7 @@
 
 The approved look for the site: a warm, friendly, hand-inked comic-strip feel on a tan ground, with springy animations. All art is original (footballs, helmets, pennants, motion arcs). Do not draw or imitate any existing cartoon characters.
 
-Reference: the "A · Sunday Funnies" artboard in the Claude canvas "Family Feud Look and Feel". This file is the source of truth for the build.
+Reference: the "A · Sunday Funnies" artboard in the Claude design canvas. This file is the source of truth for the build.
 
 ## 1. Colors (CSS variables)
 
@@ -46,7 +46,7 @@ Rules: color is never the only signal; every bar shows its value as text, chips 
 
 | Component | Notes |
 |---|---|
-| Header | Original helmet icon + "Family Feud" in Londrina 900 (about 50 px) + tagline; right-aligned nav pills that wrap on phones |
+| Header | Original helmet icon + "Sunday Funnies" in Londrina 900 (about 50 px) + tagline; right-aligned nav pills that wrap on phones |
 | Nav pill | Ink border, hard shadow, active pill is `--yellow`; hover lifts 3 px and turns yellow |
 | Hero panel | Paper card, big headline ("Week N is in the books!"), one-line status, animated football with a dashed arc |
 | Stat cards (4) | Equal-width grid: 4 across, 2 on tablets, 1 on phones. Label small, number in Londrina 50 px (shrinks only when a card is too narrow for the value) colored by meaning (blue points, ink high score, brown margin, red negative), name below. One card uses `--butter` |
@@ -84,7 +84,7 @@ Simple football on a tan rounded square. Source file `favicon.svg` (also copy to
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="#E3D5BF"/><g transform="rotate(-28 32 32)"><ellipse cx="32" cy="32" rx="25" ry="15" fill="#9A5B1E" stroke="#2B2118" stroke-width="4"/><path d="M19 32H45" stroke="#FBF4E6" stroke-width="3.5" stroke-linecap="round"/><path d="M25 26V38M32 26V38M39 26V38" stroke="#FBF4E6" stroke-width="3" stroke-linecap="round"/></g></svg>
 ```
 
-Generate from it: `favicon.ico` (32×32), `apple-touch-icon.png` (180×180), `icon-192.png`, `icon-512.png`, and a `site.webmanifest` with `name: "Family Feud"`, `background_color: #E3D5BF`, `theme_color: #E3D5BF`. In `index.html` add `<link rel="icon" href="/favicon.svg" type="image/svg+xml">`, an ICO fallback, the apple-touch-icon link, and `<meta name="theme-color" content="#E3D5BF">`. Also use the football as the loading spinner (rolling) and the 404 page art.
+Generate from it: `favicon.ico` (32×32), `apple-touch-icon.png` (180×180), `icon-192.png`, `icon-512.png`, and a `site.webmanifest` with `name: "Sunday Funnies"`, `background_color: #E3D5BF`, `theme_color: #E3D5BF`. In `index.html` add `<link rel="icon" href="/favicon.svg" type="image/svg+xml">`, an ICO fallback, the apple-touch-icon link, and `<meta name="theme-color" content="#E3D5BF">`. Also use the football as the loading spinner (rolling) and the 404 page art.
 
 ## 7. Layout and responsiveness
 

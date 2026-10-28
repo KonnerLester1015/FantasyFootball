@@ -8,7 +8,7 @@ import type { HistorySeason, HistoryWeek } from './seasons';
  * The record book is rebuilt by replaying saved results in order, every
  * time, so a corrected score or a removed duplicate changes the book rather
  * than leaving an obsolete claim behind. Rules carried over from
- * reference/legacy/FamilyFeud_Redraft.gs:805-850 (algorithm version 3):
+ * reference/legacy/Redraft.gs:805-850 (algorithm version 3):
  *
  *   - only a **strict improvement** breaks a record, and only a break names a
  *     predecessor; the outgoing holders join the record's chain

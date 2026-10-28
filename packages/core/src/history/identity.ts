@@ -6,7 +6,7 @@
  * starts new totals. An unowned roster has no account, so it gets an identity
  * scoped to its league and slot — it can never merge into another season's
  * unowned roster, or into a real manager. Legacy rule, from
- * reference/legacy/FamilyFeud_Redraft.gs:644.
+ * reference/legacy/Redraft.gs:644.
  *
  * Every career and record-book row keys on this one function.
  */

@@ -7,7 +7,7 @@ import type { HistorySeason } from './seasons';
  *
  * One row per Sleeper user ID across every season handed in, so the 2027
  * rollover adds a season rather than a second career. Rules carried over
- * from reference/legacy/FamilyFeud_Redraft.gs:694-709:
+ * from reference/legacy/Redraft.gs:694-709:
  *
  *   - titles, finals, playoff appearances, lowest-PF seasons and last-place
  *     finishes count **completed** seasons only — a mid-season leader has no

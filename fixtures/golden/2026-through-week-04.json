@@ -2,8 +2,8 @@
   "description": "Expected 2026 numbers, finalized through week 4. Copied from the Sheets version's exports so packages/core has something to be measured against before any metric is written.",
   "source": {
     "files": [
-      "reference/sheet-exports/Family Feud 2026 Stats - CURRENT_SEASON.csv",
-      "reference/sheet-exports/Family Feud 2026 Stats - HISTORY_DASHBOARD.csv"
+      "reference/sheet-exports/2026 Stats - CURRENT_SEASON.csv",
+      "reference/sheet-exports/2026 Stats - HISTORY_DASHBOARD.csv"
     ],
     "note": "reference/ is gitignored, so the numbers are copied here rather than read at test time (fixtures/README.md). Two fields are no longer the sheet's: maxPfBestLegalLineup and pointsLeftOnBench were regenerated when Max PF moved to the full-lineup definition. Both stay externally anchored — the first equals Sleeper's own ppts for all 14 teams, the second is that minus the sheet's pf — so neither is this repo checking its own arithmetic. The sheet's prior values are in maxPfDefinitionChange.",
     "sheetUpdatedAt": "2026-10-09T10:14:12.389Z",

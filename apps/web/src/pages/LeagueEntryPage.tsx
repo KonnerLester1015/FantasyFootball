@@ -10,10 +10,21 @@ function guessSeason(): string {
   return String(now.getMonth() >= 2 ? now.getFullYear() : now.getFullYear() - 1);
 }
 
+/** Sleeper's first NFL fantasy season. */
+const FIRST_SEASON = 2017;
+
+/** Every season Sleeper could have a league for, newest first. */
+function validSeasons(): string[] {
+  const latest = Number(guessSeason());
+  return Array.from({ length: latest - FIRST_SEASON + 1 }, (_unused, i) => String(latest - i));
+}
+
 export function LeagueEntryPage({ onSelect }: { onSelect: (leagueId: string) => void }) {
   const [leagueId, setLeagueId] = useState('');
   const [username, setUsername] = useState('');
   const [season, setSeason] = useState(guessSeason);
+  const [seasons] = useState(validSeasons);
+  const seasonValid = seasons.includes(season.trim());
   const [found, setFound] = useState<FoundLeague[] | null>(null);
   const [looking, setLooking] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -29,7 +40,7 @@ export function LeagueEntryPage({ onSelect }: { onSelect: (leagueId: string) => 
     setLooking(true);
     setError(null);
     setFound(null);
-    findLeaguesForUsername(username, season).then(
+    findLeaguesForUsername(username, season.trim()).then(
       (leagues) => {
         setLooking(false);
         setFound(leagues);
@@ -101,11 +112,28 @@ export function LeagueEntryPage({ onSelect }: { onSelect: (leagueId: string) => 
               <input
                 id="season"
                 inputMode="numeric"
+                maxLength={4}
+                list="season-options"
+                autoComplete="off"
                 value={season}
-                onChange={(event) => setSeason(event.target.value)}
+                onChange={(event) => setSeason(event.target.value.replace(/\D/g, ''))}
+                aria-invalid={!seasonValid}
+                aria-describedby="season-hint"
               />
+              <datalist id="season-options">
+                {seasons.map((year) => (
+                  <option key={year} value={year} />
+                ))}
+              </datalist>
+              <p id="season-hint" className={seasonValid ? 'sr-only' : undefined}>
+                Pick a season from {FIRST_SEASON} to {seasons[0]}.
+              </p>
             </div>
-            <button type="submit" className="button" disabled={username.trim() === '' || looking}>
+            <button
+              type="submit"
+              className="button"
+              disabled={username.trim() === '' || !seasonValid || looking}
+            >
               {looking ? 'Looking…' : 'Find my leagues'}
             </button>
           </form>

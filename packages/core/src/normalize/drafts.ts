@@ -41,7 +41,7 @@ export interface BuildDraftPickRowsInput {
 }
 
 /**
- * The draft's own row. Family Feud runs one annual redraft, so this is pulled
+ * The draft's own row. A redraft league runs one draft a year, so this is pulled
  * once a season and then only when its status changes (REBUILD_PLAN §3).
  */
 export function buildDraftRow({ draft, leagueId, syncedAt }: BuildDraftRowInput): DraftRow {

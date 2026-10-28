@@ -20,7 +20,7 @@ import type { MatchupRow } from '../normalize/matchups';
  * callers disagreeing about what "the season" means is how the Sheets version
  * ended up with the same metric reading differently on two tabs.
  *
- * Rules carried over from reference/legacy/FamilyFeud_Redraft.gs:252-271 and
+ * Rules carried over from reference/legacy/Redraft.gs:252-271 and
  * :660 (the weekly top/last definition):
  *
  *   - All-play compares against the other rosters **in the same week**, never
@@ -268,7 +268,7 @@ function holdersOf(
  * The margin record book.
  *
  * A victory needs a positive margin, which is what keeps a tie out of both
- * margin records (legacy rule, reference/legacy/FamilyFeud_Redraft.gs:719).
+ * margin records (legacy rule, reference/legacy/Redraft.gs:719).
  */
 export function leagueRecords(matchups: readonly MatchupRow[]): LeagueRecords {
   const wins = matchups.filter((game) => game.result === 'W' && (game.margin ?? 0) > 0);

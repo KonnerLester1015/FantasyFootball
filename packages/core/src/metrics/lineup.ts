@@ -23,7 +23,7 @@ import type { PlayerDictionary, SleeperMatchup } from '../sleeper/types';
  *     nobody at DEF, so a lineup with an empty slot is not a lineup the manager
  *     could have fielded, and crediting one would overstate Max PF and the
  *     bench gap alike. This is the one place the rebuild deliberately departs
- *     from reference/legacy/FamilyFeud_Redraft.gs:181, which allowed empty
+ *     from reference/legacy/Redraft.gs:181, which allowed empty
  *     slots; `allowEmptySlots: true` still reproduces the legacy number, and
  *     the four teams it moved are recorded in fixtures/golden.
  *   - Missing positions or missing scores produce a status and a BLANK total,
@@ -71,7 +71,7 @@ const DEDICATED_SLOTS = new Set([
 
 /**
  * One occupied-slot bitmask per DP state, so 16 starting slots is the ceiling.
- * Family Feud starts 10. A league beyond the ceiling gets UNSUPPORTED_SLOTS and
+ * The fixture league starts 10. A league beyond the ceiling gets UNSUPPORTED_SLOTS and
  * a blank, which is the honest answer — not a silently truncated lineup.
  */
 const MAX_STARTING_SLOTS = 16;

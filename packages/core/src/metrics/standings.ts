@@ -88,7 +88,7 @@ export interface StandingsInput {
  * Win percentage as a fraction: a tie is half a win.
  *
  * 0 before the first game rather than a division by zero. Legacy rule, from
- * reference/legacy/FamilyFeud_Redraft.gs:273.
+ * reference/legacy/Redraft.gs:273.
  */
 export function recordPct(record: RecordLike): number {
   const games = record.wins + record.losses + record.ties;
@@ -101,7 +101,7 @@ export function recordPct(record: RecordLike): number {
  * Negative when `a` ranks above `b`, so it drops straight into `sort`. A return
  * of 0 is an exact tie in all three keys, which is what `rank_tied` reports —
  * this comparator does not invent a winner for one. Legacy rule, from
- * reference/legacy/FamilyFeud_Redraft.gs:274.
+ * reference/legacy/Redraft.gs:274.
  */
 export function standingsCompare(a: StandingsKey, b: StandingsKey): number {
   return (

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import type { BracketGameView } from '@family-feud/core';
+import type { BracketGameView } from '@sunday-funnies/core';
 import type { Dashboards } from '../data/loadSeason';
 import { DEF } from '../definitions';
 import { count, pct, pctTone } from '../format';

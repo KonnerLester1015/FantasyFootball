@@ -18,7 +18,7 @@ function round2(value: number): number {
   return Math.round((value + Number.EPSILON) * 100) / 100;
 }
 
-// Legacy rule, from reference/legacy/FamilyFeud_Redraft.gs:169 and its test at
+// Legacy rule, from reference/legacy/Redraft.gs:169 and its test at
 // redraft_tests.js:8 — a commissioner override of 0 IS the score.
 describe('effectivePoints', () => {
   it('prefers custom_points over points, including a zero override', () => {

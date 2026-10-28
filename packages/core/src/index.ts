@@ -1,4 +1,4 @@
-// Public surface of @family-feud/core.
+// Public surface of @sunday-funnies/core.
 //
 // Every number the site shows is produced here and stored by functions/ingest.
 // The browser renders stored values and never recalculates a metric.

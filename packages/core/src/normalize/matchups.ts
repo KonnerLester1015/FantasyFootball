@@ -76,7 +76,7 @@ export interface BuildPlayerScoreRowsInput {
  *
  * `custom_points` is a commissioner override and wins whenever it is present,
  * including when it is 0 — hence `??` and not `||`. Legacy rule from
- * reference/legacy/FamilyFeud_Redraft.gs:169, asserted by its own test suite.
+ * reference/legacy/Redraft.gs:169, asserted by its own test suite.
  */
 export function effectivePoints(matchup: SleeperMatchup): number {
   return Number(matchup.custom_points ?? matchup.points ?? 0);

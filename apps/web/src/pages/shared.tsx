@@ -1,7 +1,7 @@
 // Lookups and selections over stored read models. Nothing here derives a
 // metric: it finds rows, orders them, and picks the rows sharing a top value.
 
-import type { CurrentDashboard, CurrentTeam } from '@family-feud/core';
+import type { CurrentDashboard, CurrentTeam } from '@sunday-funnies/core';
 import { positionLabel } from '../format';
 import { useLeagueHref } from '../league-context';
 import { Chip } from '../ui';

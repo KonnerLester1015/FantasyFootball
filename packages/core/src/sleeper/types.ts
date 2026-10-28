@@ -22,7 +22,7 @@ export interface NflState {
  * Only the handful the dashboards depend on is named.
  */
 export interface SleeperLeagueSettings {
-  /** First postseason week. 15 for Family Feud; the regular season is 1..14. */
+  /** First postseason week. Commonly 15, making the regular season 1..14. */
   playoff_week_start?: number;
   /** Last week Sleeper has finished scoring. The finalized-week watermark. */
   last_scored_leg?: number;
@@ -148,7 +148,7 @@ export interface SleeperMatchup {
   players_points?: Record<string, number> | null;
 }
 
-/** A draft pick traded as part of a transaction. Dynasty only; Family Feud sends []. */
+/** A draft pick traded as part of a transaction. Dynasty only; redraft leagues send []. */
 export interface SleeperTradedPick {
   season?: string;
   round?: number;

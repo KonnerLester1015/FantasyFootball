@@ -1,5 +1,5 @@
 // apps/web's thin I/O wrapper: fetches a Sleeper league straight from the
-// browser and hands raw payloads to @family-feud/core, which does every
+// browser and hands raw payloads to @sunday-funnies/core, which does every
 // calculation. No backend, no persistence beyond a local player-dictionary
 // cache — a page load always recomputes from Sleeper's live data.
 
@@ -20,7 +20,7 @@ import {
   type SleeperDraftPick,
   type SleeperLeague,
   type SummaryDashboard,
-} from '@family-feud/core';
+} from '@sunday-funnies/core';
 import leagueConfig from '../../../../config/league.json';
 
 export interface Dashboards {
@@ -78,27 +78,28 @@ interface RawSeason {
   scoredThroughWeek: number;
 }
 
-/** Every week a season could have played, scored or not. */
+/**
+ * Every week on the league's calendar, scored or not. Unplayed weeks carry
+ * Sleeper's published pairings, which the playoff simulation needs to replay
+ * the real remaining schedule; core ignores their zero scores.
+ */
 async function fetchWeeklyMatchups(
-  leagueId: string,
-  throughWeek: number,
+  league: SleeperLeague,
 ): Promise<Map<number, Awaited<ReturnType<SleeperClient['getMatchups']>>>> {
-  const weeks = Array.from({ length: Math.max(0, throughWeek) }, (_unused, i) => i + 1);
-  const results = partitionSettled(await sleeper.getMatchupsForWeeks(leagueId, weeks));
+  const weeks = Array.from({ length: seasonLastWeek(league) }, (_unused, i) => i + 1);
+  const results = partitionSettled(await sleeper.getMatchupsForWeeks(league.league_id, weeks));
   return new Map(results.ok.map(({ key, value }) => [key, value]));
 }
 
 /** The current (most recent, possibly still-live) season's full raw payload. */
 async function fetchCurrentSeason(leagueId: string): Promise<RawSeason> {
-  const [state, league, users, rosters] = await Promise.all([
-    sleeper.getNflState(),
+  const [league, users, rosters] = await Promise.all([
     sleeper.getLeague(leagueId),
     sleeper.getUsers(leagueId),
     sleeper.getRosters(leagueId),
   ]);
-  const currentWeek = currentSeasonWeek(league, Number(state.week) || 0);
   const [matchups, winnersBracket, losersBracket] = await Promise.all([
-    fetchWeeklyMatchups(leagueId, currentWeek),
+    fetchWeeklyMatchups(league),
     sleeper.getWinnersBracket(leagueId),
     sleeper.getLosersBracket(leagueId),
   ]);
@@ -117,9 +118,8 @@ async function fetchCurrentSeason(leagueId: string): Promise<RawSeason> {
 async function fetchPastSeason(league: SleeperLeague): Promise<RawSeason> {
   const leagueId = league.league_id;
   const [users, rosters] = await Promise.all([sleeper.getUsers(leagueId), sleeper.getRosters(leagueId)]);
-  const lastWeek = seasonLastWeek(league);
   const [matchups, winnersBracket, losersBracket] = await Promise.all([
-    fetchWeeklyMatchups(leagueId, lastWeek),
+    fetchWeeklyMatchups(league),
     sleeper.getWinnersBracket(leagueId),
     sleeper.getLosersBracket(leagueId),
   ]);
@@ -130,7 +130,7 @@ async function fetchPastSeason(league: SleeperLeague): Promise<RawSeason> {
     matchups,
     winnersBracket,
     losersBracket,
-    scoredThroughWeek: league.settings.last_scored_leg ?? lastWeek,
+    scoredThroughWeek: league.settings.last_scored_leg ?? seasonLastWeek(league),
   };
 }
 

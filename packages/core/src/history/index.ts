@@ -1,7 +1,7 @@
 // Manager identity, career rollups, and record-event replay.
 // Definitions: docs/REBUILD_PLAN.md §2h.
 //
-// Family Feud has no prior Sleeper seasons, so these produce one season of history
+// The fixture league has no prior Sleeper seasons, so these produce one season of history
 // today. They exist now so the 2027 rollover via previous_league_id needs no rewrite.
 //
 // Invariants:

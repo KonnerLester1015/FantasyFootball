@@ -84,7 +84,7 @@ describe('recordPct', () => {
   });
 });
 
-// Legacy rule, from reference/legacy/FamilyFeud_Redraft.gs:274 — record
+// Legacy rule, from reference/legacy/Redraft.gs:274 — record
 // percentage, then higher PF, then higher PA.
 describe('standingsCompare', () => {
   const base = { wins: 2, losses: 2, ties: 0, points_for: 500, points_against: 400 };

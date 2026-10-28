@@ -17,7 +17,7 @@ import { tradeEstimates, tradeRecap } from './trades';
  *    observed weeks. Draft picks are not priced, so a trade with picks stays
  *    ungraded; so does one with a player who has no observed weeks.
  *
- * Rules from reference/legacy/FamilyFeud_Redraft.gs:764-776 (recap) and
+ * Rules from reference/legacy/Redraft.gs:764-776 (recap) and
  * :859-876 (estimate). The real fixture holds one trade — week 3, roster 1
  * sent player 12514 to roster 14 for 12526 — checked against the sheet's
  * recap row and against a hand calculation from the raw matchup JSON.

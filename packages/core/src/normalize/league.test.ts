@@ -12,7 +12,7 @@ describe('buildLeagueRow', () => {
   });
 
   it('carries the identity and status fields the dashboards read', () => {
-    expect(row.name).toBe('Family Feud');
+    expect(row.name).toBe('Sample League');
     expect(row.season).toBe('2026');
     expect(row.status).toBe('in_season');
     expect(row.draft_id).toBe(fixtures.FIXTURE_DRAFT_ID);

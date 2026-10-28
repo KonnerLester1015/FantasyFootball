@@ -1,5 +1,5 @@
 {
-  "name": "@family-feud/web",
+  "name": "@sunday-funnies/web",
   "version": "0.0.0",
   "private": true,
   "type": "module",
@@ -11,7 +11,7 @@
     "typecheck": "tsc --noEmit -p tsconfig.json && tsc --noEmit -p tsconfig.node.json"
   },
   "dependencies": {
-    "@family-feud/core": "*",
+    "@sunday-funnies/core": "*",
     "motion": "^12.43.0",
     "react": "^19.3.0",
     "react-dom": "^19.3.0"

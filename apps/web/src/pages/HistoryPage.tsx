@@ -1,4 +1,4 @@
-import type { RecordBookEntry } from '@family-feud/core';
+import type { RecordBookEntry } from '@sunday-funnies/core';
 import type { Dashboards } from '../data/loadSeason';
 import { DEF } from '../definitions';
 import { count, NA, pct, pts, signed } from '../format';

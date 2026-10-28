@@ -42,7 +42,7 @@ jobs:
         run: npm test
 
       - name: Build the site
-        run: npm run build --workspace @family-feud/web
+        run: npm run build --workspace @sunday-funnies/web
 
       - uses: actions/configure-pages@v5
 

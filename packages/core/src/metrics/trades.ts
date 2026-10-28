@@ -11,12 +11,12 @@ import type { TradeRow, TradeSide } from '../normalize/transactions';
  *    receiving roster after the trade week, same season. The trade week is
  *    excluded; a player who moves on stops counting for this roster; bench
  *    points count, because the recap measures the player, not the lineup.
- *    Legacy rule, reference/legacy/FamilyFeud_Redraft.gs:764-776.
+ *    Legacy rule, reference/legacy/Redraft.gs:764-776.
  *  - **Estimate** (projected): received minus sent players' average over the
  *    league's latest up-to-3 observed weeks, on any roster. Picks are not
  *    priced, so a trade with picks is ungraded; so is a side where any player
  *    has no observed week, or that only received or only sent. Legacy rule,
- *    reference/legacy/FamilyFeud_Redraft.gs:859-870.
+ *    reference/legacy/Redraft.gs:859-870.
  *
  * Unobserved is blank: no measured week is a null, never 0 points.
  * **Scope is the caller's**: pass finalized weeks' player scores.

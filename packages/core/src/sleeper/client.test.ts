@@ -243,3 +243,27 @@ describe('SleeperClient weekly batches', () => {
     }
   });
 });
+
+describe('default fetchImpl', () => {
+  // A browser's native fetch throws "Illegal invocation" if called with a
+  // receiver other than the global scope. Reproduce that check here so a
+  // client built with no fetchImpl override (the real-world path) is proven
+  // to call it correctly rather than as a detached instance method.
+  it('invokes the global fetch bound to its receiver, not detached', async () => {
+    const realFetch = globalThis.fetch;
+    const stub: typeof fetch = function (this: unknown) {
+      if (this !== globalThis) {
+        throw new TypeError("Failed to execute 'fetch' on 'Window': Illegal invocation");
+      }
+      return Promise.resolve(new Response(JSON.stringify(fixtures.state), { status: 200 }));
+    };
+    globalThis.fetch = stub;
+
+    try {
+      const client = new SleeperClient();
+      await expect(client.getNflState()).resolves.toEqual(fixtures.state);
+    } finally {
+      globalThis.fetch = realFetch;
+    }
+  });
+});

@@ -1,4 +1,4 @@
-# Sunday Funnies — Sleeper fantasy football dashboards
+# Fantasy Football — Sleeper fantasy football dashboards
 
 ## Goal
 

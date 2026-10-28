@@ -1,6 +1,6 @@
 {
-  "name": "Sunday Funnies",
-  "short_name": "Sunday Funnies",
+  "name": "Fantasy Football",
+  "short_name": "Fantasy Football",
   "start_url": "/FantasyFootball/",
   "display": "standalone",
   "background_color": "#E3D5BF",

@@ -48,7 +48,7 @@ export function LeagueEntryPage({ onSelect }: { onSelect: (leagueId: string) => 
         <a className="brand" href="#/">
           <Football size={48} />
           <span>
-            <span className="brand-name">Sunday Funnies</span>
+            <span className="brand-name">Fantasy Football</span>
             <span className="tagline">Your league, on the record.</span>
           </span>
         </a>
@@ -124,7 +124,7 @@ export function LeagueEntryPage({ onSelect }: { onSelect: (leagueId: string) => 
         </Card>
       </main>
       <footer className="site-footer">
-        <p>&copy; 2026 Sunday Funnies</p>
+        <p>&copy; 2026 Fantasy Football</p>
       </footer>
     </>
   );

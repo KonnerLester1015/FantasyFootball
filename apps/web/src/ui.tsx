@@ -1,4 +1,4 @@
-// The "Sunday Funnies" kit (docs/DESIGN_BRIEF.md): original art, cards, speech
+// The "Fantasy Football" kit (docs/DESIGN_BRIEF.md): original art, cards, speech
 // bubbles, count-up numbers, outlined bar charts, tabs. Renders stored numbers
 // only; the one thing computed here is chart geometry (bar length from value).
 

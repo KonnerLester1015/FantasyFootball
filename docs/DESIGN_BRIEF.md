@@ -1,4 +1,4 @@
-# Design Brief — "Sunday Funnies"
+# Design Brief — "Fantasy Football"
 
 The approved look for the site: a warm, friendly, hand-inked comic-strip feel on a tan ground, with springy animations. All art is original (footballs, helmets, pennants, motion arcs). Do not draw or imitate any existing cartoon characters.
 

@@ -58,7 +58,7 @@ export class SleeperClient {
 
   constructor(options: SleeperClientOptions = {}) {
     this.baseUrl = options.baseUrl ?? SLEEPER_BASE_URL;
-    this.fetchImpl = options.fetchImpl ?? globalThis.fetch;
+    this.fetchImpl = options.fetchImpl ?? globalThis.fetch.bind(globalThis);
     this.retries = options.retries ?? 2;
     this.retryDelayMs = options.retryDelayMs ?? 500;
     this.sleep = options.sleep ?? defaultSleep;

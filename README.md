@@ -1,4 +1,4 @@
-# Sunday Funnies
+# Fantasy Football
 
 Fantasy football dashboards for **any Sleeper league** — standings, playoff odds, optimal-lineup
 and all-play metrics, a cross-season record book, and a weekly recap. Enter a Sleeper league ID

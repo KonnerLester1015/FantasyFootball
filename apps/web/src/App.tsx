@@ -103,7 +103,7 @@ function LeagueApp({ leagueId, subPath }: { leagueId: string; subPath: string })
   useEffect(() => {
     window.scrollTo(0, 0);
     const page = NAV.find((n) => n.path === subPath)?.label;
-    document.title = page ? `${page} · Sunday Funnies` : 'Sunday Funnies';
+    document.title = page ? `${page} · Fantasy Football` : 'Fantasy Football';
   }, [subPath]);
 
   return (
@@ -115,7 +115,7 @@ function LeagueApp({ leagueId, subPath }: { leagueId: string; subPath: string })
         <a className="brand" href={`#/${leagueId}`}>
           <Helmet />
           <span>
-            <span className="brand-name">Sunday Funnies</span>
+            <span className="brand-name">Fantasy Football</span>
             <span className="tagline">Your league, on the record.</span>
           </span>
         </a>
@@ -164,7 +164,7 @@ function LeagueApp({ leagueId, subPath }: { leagueId: string; subPath: string })
         )}
       </main>
       <footer className="site-footer">
-        <p>&copy; 2026 Sunday Funnies</p>
+        <p>&copy; 2026 Fantasy Football</p>
       </footer>
     </>
   );

@@ -1,0 +1,9 @@
+node_modules/
+dist/
+coverage/
+reference/
+Archived - DONT PUSH TO REPO/
+package-lock.json
+
+# Sleeper payloads are saved verbatim; formatting them would rewrite the evidence
+fixtures/sleeper/

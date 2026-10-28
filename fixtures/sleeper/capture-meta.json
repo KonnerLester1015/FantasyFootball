@@ -1,0 +1,89 @@
+{
+  "capturedAt": "2026-10-10T17:22:58.037Z",
+  "capturedBy": "scripts/capture-fixtures.ts",
+  "leagueId": "1390575664880418816",
+  "sleeperState": {
+    "season": "2026",
+    "week": 5,
+    "season_type": "regular"
+  },
+  "weeks": {
+    "matchups": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14
+    ],
+    "transactions": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+    ]
+  },
+  "players": {
+    "referenced": 274,
+    "saved": 274,
+    "missingFromDictionary": []
+  },
+  "httpCalls": 30,
+  "files": [
+    "draft-1390575666528796672-picks.json",
+    "draft-1390575666528796672.json",
+    "drafts.json",
+    "league.json",
+    "losers_bracket.json",
+    "matchups-w01.json",
+    "matchups-w02.json",
+    "matchups-w03.json",
+    "matchups-w04.json",
+    "matchups-w05.json",
+    "matchups-w06.json",
+    "matchups-w07.json",
+    "matchups-w08.json",
+    "matchups-w09.json",
+    "matchups-w10.json",
+    "matchups-w11.json",
+    "matchups-w12.json",
+    "matchups-w13.json",
+    "matchups-w14.json",
+    "players.json",
+    "rosters.json",
+    "state.json",
+    "transactions-w00.json",
+    "transactions-w01.json",
+    "transactions-w02.json",
+    "transactions-w03.json",
+    "transactions-w04.json",
+    "transactions-w05.json",
+    "users.json",
+    "winners_bracket.json"
+  ],
+  "scheduleCapture": {
+    "weeks": [
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14
+    ],
+    "capturedAt": "2026-10-10T20:40:00Z",
+    "note": "Future regular-season weeks fetched alone so the playoff model has the real remaining schedule. Weeks 1-5 and every other file were left untouched, so the golden numbers still describe them."
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "lib": ["ES2023"],
+    // Node, not DOM: core's only I/O is the Sleeper client, which runs in the
+    // ingest function and in scripts/. Node 22 types cover fetch, Response and
+    // setTimeout without putting browser globals like `document` in reach.
+    "types": ["node"]
+  },
+  "include": ["src/**/*.ts"]
+}

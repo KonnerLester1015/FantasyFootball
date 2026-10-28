@@ -1,0 +1,21 @@
+{
+  "name": "@family-feud/core",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Fantasy football metric math for any Sleeper league. Pure TypeScript, no I/O beyond the Sleeper client.",
+  "exports": {
+    ".": "./src/index.ts",
+    "./sleeper": "./src/sleeper/index.ts",
+    "./normalize": "./src/normalize/index.ts",
+    "./metrics": "./src/metrics/index.ts",
+    "./playoff": "./src/playoff/index.ts",
+    "./history": "./src/history/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit -p tsconfig.json"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.5"
+  }
+}

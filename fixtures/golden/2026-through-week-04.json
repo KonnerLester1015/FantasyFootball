@@ -1,0 +1,678 @@
+{
+  "description": "Expected 2026 numbers, finalized through week 4. Copied from the Sheets version's exports so packages/core has something to be measured against before any metric is written.",
+  "source": {
+    "files": [
+      "reference/sheet-exports/Family Feud 2026 Stats - CURRENT_SEASON.csv",
+      "reference/sheet-exports/Family Feud 2026 Stats - HISTORY_DASHBOARD.csv"
+    ],
+    "note": "reference/ is gitignored, so the numbers are copied here rather than read at test time (fixtures/README.md). Two fields are no longer the sheet's: maxPfBestLegalLineup and pointsLeftOnBench were regenerated when Max PF moved to the full-lineup definition. Both stay externally anchored — the first equals Sleeper's own ppts for all 14 teams, the second is that minus the sheet's pf — so neither is this repo checking its own arithmetic. The sheet's prior values are in maxPfDefinitionChange.",
+    "sheetUpdatedAt": "2026-10-09T10:14:12.389Z",
+    "playoffNote": "rank, playoffChancePct, gamesLeft and positionNow are copied from the CURRENT_SEASON standings table. The sheet ran 5,000 simulations from the week-4 state with seed 20261004 + 4."
+  },
+  "league": {
+    "id": "1390575664880418816",
+    "season": "2026"
+  },
+  "asOf": {
+    "finalizedThroughWeek": 4,
+    "regularSeasonWeeks": 14,
+    "note": "fixtures/sleeper was captured during week 5, so week 5 is live and excluded from every number here."
+  },
+  "units": {
+    "record": "text, wins-losses-ties",
+    "pf": "points, 2dp",
+    "pa": "points, 2dp",
+    "maxPfSleeper": "points; rosters[].settings.ppts + ppts_decimal/100",
+    "maxPfBestLegalLineup": "points; sum over weeks 1-4 of the best full lineup — every starting slot filled. Equals maxPfSleeper for all 14 teams.",
+    "allPlayPct": "percent 0-100; share of the other 13 weekly scores beaten, ties count half",
+    "scheduleLuck": "wins; actual win credit minus all-play expected wins",
+    "pointsLeftOnBench": "points; best full lineup minus actual, summed over weeks 1-4",
+    "consistency": "points; population standard deviation of weekly scores, lower is more consistent",
+    "weeklyCrowns": "count of weeks 1-4 with the league's highest actual score, ties share",
+    "rank": "Sleeper order: record %, then PF, then PA",
+    "playoffChancePct": "percent 0-100; share of 5,000 simulated remaining seasons finishing in the top 6. Simulated, so packages/core is compared within a tolerance, not to 0.01"
+  },
+  "teams": [
+    {
+      "rosterId": 1,
+      "manager": "Manbearpig96",
+      "team": "Prestige Worldwide",
+      "record": "2-2-0",
+      "wins": 2,
+      "losses": 2,
+      "ties": 0,
+      "pf": 548.64,
+      "pa": 479.08,
+      "maxPfSleeper": 578.12,
+      "maxPfBestLegalLineup": 578.12,
+      "allPlayPct": 63.46,
+      "scheduleLuck": -0.54,
+      "pointsLeftOnBench": 29.48,
+      "consistency": 37.74,
+      "weeklyCrowns": 1,
+      "rank": 6,
+      "playoffChancePct": 63.34,
+      "gamesLeft": 10,
+      "positionNow": "inside"
+    },
+    {
+      "rosterId": 2,
+      "manager": "Womanbearpig96",
+      "team": "Pudgy Penguins",
+      "record": "2-2-0",
+      "wins": 2,
+      "losses": 2,
+      "ties": 0,
+      "pf": 538.98,
+      "pa": 537.06,
+      "maxPfSleeper": 639.48,
+      "maxPfBestLegalLineup": 639.48,
+      "allPlayPct": 59.62,
+      "scheduleLuck": -0.38,
+      "pointsLeftOnBench": 100.5,
+      "consistency": 15.03,
+      "weeklyCrowns": 0,
+      "rank": 7,
+      "playoffChancePct": 68.06,
+      "gamesLeft": 10,
+      "positionNow": "outside"
+    },
+    {
+      "rosterId": 3,
+      "manager": "ftcrumpfantasea",
+      "team": "ftcrumpfantasea",
+      "record": "2-2-0",
+      "wins": 2,
+      "losses": 2,
+      "ties": 0,
+      "pf": 456.72,
+      "pa": 462.98,
+      "maxPfSleeper": 539.94,
+      "maxPfBestLegalLineup": 539.94,
+      "allPlayPct": 38.46,
+      "scheduleLuck": 0.46,
+      "pointsLeftOnBench": 83.22,
+      "consistency": 20.09,
+      "weeklyCrowns": 0,
+      "rank": 9,
+      "playoffChancePct": 13.18,
+      "gamesLeft": 10,
+      "positionNow": "outside"
+    },
+    {
+      "rosterId": 4,
+      "manager": "Konman0725",
+      "team": "Happy Hamsters",
+      "record": "4-0-0",
+      "wins": 4,
+      "losses": 0,
+      "ties": 0,
+      "pf": 510,
+      "pa": 424.28,
+      "maxPfSleeper": 556.1,
+      "maxPfBestLegalLineup": 556.1,
+      "allPlayPct": 59.62,
+      "scheduleLuck": 1.62,
+      "pointsLeftOnBench": 46.1,
+      "consistency": 22.51,
+      "weeklyCrowns": 0,
+      "rank": 1,
+      "playoffChancePct": 63.86,
+      "gamesLeft": 10,
+      "positionNow": "inside"
+    },
+    {
+      "rosterId": 5,
+      "manager": "Landondunwoody11",
+      "team": "Team Sith",
+      "record": "0-4-0",
+      "wins": 0,
+      "losses": 4,
+      "ties": 0,
+      "pf": 398.56,
+      "pa": 653.48,
+      "maxPfSleeper": 458.04,
+      "maxPfBestLegalLineup": 458.04,
+      "allPlayPct": 17.31,
+      "scheduleLuck": -0.69,
+      "pointsLeftOnBench": 59.48,
+      "consistency": 10.46,
+      "weeklyCrowns": 0,
+      "rank": 13,
+      "playoffChancePct": 0.02,
+      "gamesLeft": 10,
+      "positionNow": "outside"
+    },
+    {
+      "rosterId": 6,
+      "manager": "Rumple122",
+      "team": "Rumple122",
+      "record": "0-4-0",
+      "wins": 0,
+      "losses": 4,
+      "ties": 0,
+      "pf": 349.44,
+      "pa": 512.54,
+      "maxPfSleeper": 477.64,
+      "maxPfBestLegalLineup": 477.64,
+      "allPlayPct": 5.77,
+      "scheduleLuck": -0.23,
+      "pointsLeftOnBench": 128.2,
+      "consistency": 18.24,
+      "weeklyCrowns": 0,
+      "rank": 14,
+      "playoffChancePct": 0,
+      "gamesLeft": 10,
+      "positionNow": "outside",
+      "lowestPf": true
+    },
+    {
+      "rosterId": 7,
+      "manager": "Aceman14",
+      "team": "Seattle Superstars",
+      "record": "2-2-0",
+      "wins": 2,
+      "losses": 2,
+      "ties": 0,
+      "pf": 443.38,
+      "pa": 452.74,
+      "maxPfSleeper": 493.84,
+      "maxPfBestLegalLineup": 493.84,
+      "allPlayPct": 34.62,
+      "scheduleLuck": 0.62,
+      "pointsLeftOnBench": 50.46,
+      "consistency": 17.78,
+      "weeklyCrowns": 0,
+      "rank": 11,
+      "playoffChancePct": 9.32,
+      "gamesLeft": 10,
+      "positionNow": "outside"
+    },
+    {
+      "rosterId": 8,
+      "manager": "prettynpink1006",
+      "team": "Dababy Bears",
+      "record": "2-2-0",
+      "wins": 2,
+      "losses": 2,
+      "ties": 0,
+      "pf": 510.2,
+      "pa": 436.14,
+      "maxPfSleeper": 540.3,
+      "maxPfBestLegalLineup": 540.3,
+      "allPlayPct": 48.08,
+      "scheduleLuck": 0.08,
+      "pointsLeftOnBench": 30.1,
+      "consistency": 27.4,
+      "weeklyCrowns": 1,
+      "rank": 8,
+      "playoffChancePct": 31.34,
+      "gamesLeft": 10,
+      "positionNow": "outside"
+    },
+    {
+      "rosterId": 9,
+      "manager": "bigKdawgie",
+      "team": "bigKdawgie",
+      "record": "3-1-0",
+      "wins": 3,
+      "losses": 1,
+      "ties": 0,
+      "pf": 572.52,
+      "pa": 508.46,
+      "maxPfSleeper": 627.52,
+      "maxPfBestLegalLineup": 627.52,
+      "allPlayPct": 71.15,
+      "scheduleLuck": 0.15,
+      "pointsLeftOnBench": 55,
+      "consistency": 28.29,
+      "weeklyCrowns": 1,
+      "rank": 3,
+      "playoffChancePct": 82.86,
+      "gamesLeft": 10,
+      "positionNow": "inside"
+    },
+    {
+      "rosterId": 10,
+      "manager": "alexdun17",
+      "team": "alexdun17",
+      "record": "3-1-0",
+      "wins": 3,
+      "losses": 1,
+      "ties": 0,
+      "pf": 590.84,
+      "pa": 453.66,
+      "maxPfSleeper": 656.88,
+      "maxPfBestLegalLineup": 656.88,
+      "allPlayPct": 78.85,
+      "scheduleLuck": -0.15,
+      "pointsLeftOnBench": 66.04,
+      "consistency": 14.11,
+      "weeklyCrowns": 1,
+      "rank": 2,
+      "playoffChancePct": 93.16,
+      "gamesLeft": 10,
+      "positionNow": "inside"
+    },
+    {
+      "rosterId": 11,
+      "manager": "tdunwoody17",
+      "team": "tdunwoody17",
+      "record": "2-2-0",
+      "wins": 2,
+      "losses": 2,
+      "ties": 0,
+      "pf": 448.26,
+      "pa": 451.84,
+      "maxPfSleeper": 544.36,
+      "maxPfBestLegalLineup": 544.36,
+      "allPlayPct": 36.54,
+      "scheduleLuck": 0.54,
+      "pointsLeftOnBench": 96.1,
+      "consistency": 17.7,
+      "weeklyCrowns": 0,
+      "rank": 10,
+      "playoffChancePct": 9.48,
+      "gamesLeft": 10,
+      "positionNow": "outside"
+    },
+    {
+      "rosterId": 12,
+      "manager": "ToddDunwoody",
+      "team": "Greatest show on turf",
+      "record": "3-1-0",
+      "wins": 3,
+      "losses": 1,
+      "ties": 0,
+      "pf": 555.28,
+      "pa": 551.86,
+      "maxPfSleeper": 602.46,
+      "maxPfBestLegalLineup": 602.46,
+      "allPlayPct": 76.92,
+      "scheduleLuck": -0.08,
+      "pointsLeftOnBench": 47.18,
+      "consistency": 12.72,
+      "weeklyCrowns": 0,
+      "rank": 4,
+      "playoffChancePct": 91.44,
+      "gamesLeft": 10,
+      "positionNow": "inside"
+    },
+    {
+      "rosterId": 13,
+      "manager": "tmwasmer",
+      "team": "tmwasmer",
+      "record": "1-3-0",
+      "wins": 1,
+      "losses": 3,
+      "ties": 0,
+      "pf": 441.92,
+      "pa": 456.12,
+      "maxPfSleeper": 498.22,
+      "maxPfBestLegalLineup": 498.22,
+      "allPlayPct": 36.54,
+      "scheduleLuck": -0.46,
+      "pointsLeftOnBench": 56.3,
+      "consistency": 20.72,
+      "weeklyCrowns": 0,
+      "rank": 12,
+      "playoffChancePct": 1.56,
+      "gamesLeft": 10,
+      "positionNow": "outside"
+    },
+    {
+      "rosterId": 14,
+      "manager": "ToddWittenauer",
+      "team": "ToddWittenauer",
+      "record": "2-2-0",
+      "wins": 2,
+      "losses": 2,
+      "ties": 0,
+      "pf": 555.84,
+      "pa": 540.34,
+      "maxPfSleeper": 603.84,
+      "maxPfBestLegalLineup": 603.84,
+      "allPlayPct": 73.08,
+      "scheduleLuck": -0.92,
+      "pointsLeftOnBench": 48,
+      "consistency": 5.42,
+      "weeklyCrowns": 0,
+      "rank": 5,
+      "playoffChancePct": 72.38,
+      "gamesLeft": 10,
+      "positionNow": "inside"
+    }
+  ],
+  "records": {
+    "note": "Record-book values for weeks 1-4, copied from the sheet's HISTORY_DASHBOARD record rows (highest/lowest single week, most weeks above 150/200, most weekly last-place scores, narrowest victory, highest scoring loss) and the CURRENT_SEASON largest-margin card. Ties share a record, so every holder is listed.",
+    "highestSingleWeekScore": {
+      "points": 173,
+      "teams": [
+        "bigKdawgie"
+      ],
+      "week": 1
+    },
+    "lowestSingleWeekScore": {
+      "points": 67.24,
+      "teams": [
+        "Rumple122"
+      ],
+      "week": 3
+    },
+    "largestWinningMargin": {
+      "margin": 81.72,
+      "winner": "Prestige Worldwide",
+      "loser": "Team Sith",
+      "week": 4
+    },
+    "narrowestVictory": {
+      "margin": 5.18,
+      "winner": "Happy Hamsters",
+      "loser": "tmwasmer",
+      "week": 4
+    },
+    "highestScoringLoss": {
+      "points": 136.72,
+      "team": "tmwasmer",
+      "week": 1
+    },
+    "mostWeeksOver150": {
+      "weeks": 2,
+      "teams": [
+        "Prestige Worldwide",
+        "bigKdawgie",
+        "alexdun17"
+      ]
+    },
+    "mostWeeksOver200": {
+      "weeks": 0,
+      "teams": []
+    },
+    "mostLastPlaceWeeks": {
+      "weeks": 2,
+      "teams": [
+        "Rumple122"
+      ]
+    }
+  },
+  "recordBook": {
+    "note": "The sheet's LEAGUE RECORD BOOK (HISTORY_DASHBOARD rows 31-47) for weeks 1-4: the current holder and every previous holder a strict improvement replaced, oldest first. `week` is the week shown in the holder's label: the score's week for single-week records, the latest counted week for counts and career totals. Omitted: the injury record, which the sheet took from week-5 snapshots the fixtures do not hold, and the two completed-season records, unavailable mid-season.",
+    "hi_week": {
+      "value": 173,
+      "holders": [
+        {
+          "team": "bigKdawgie",
+          "week": 1
+        }
+      ],
+      "previous": []
+    },
+    "lo_week": {
+      "value": 67.24,
+      "holders": [
+        {
+          "team": "Rumple122",
+          "week": 3
+        }
+      ],
+      "previous": [
+        {
+          "value": 85.22,
+          "holders": [
+            {
+              "team": "ftcrumpfantasea",
+              "week": 1
+            }
+          ],
+          "brokenInWeek": 2
+        },
+        {
+          "value": 73.48,
+          "holders": [
+            {
+              "team": "Rumple122",
+              "week": 2
+            }
+          ],
+          "brokenInWeek": 3
+        }
+      ]
+    },
+    "crowns": {
+      "value": 1,
+      "holders": [
+        {
+          "team": "Dababy Bears",
+          "week": 4
+        },
+        {
+          "team": "Prestige Worldwide",
+          "week": 4
+        },
+        {
+          "team": "alexdun17",
+          "week": 4
+        },
+        {
+          "team": "bigKdawgie",
+          "week": 4
+        }
+      ],
+      "previous": []
+    },
+    "over_150": {
+      "value": 2,
+      "holders": [
+        {
+          "team": "Prestige Worldwide",
+          "week": 4
+        },
+        {
+          "team": "alexdun17",
+          "week": 4
+        },
+        {
+          "team": "bigKdawgie",
+          "week": 4
+        }
+      ],
+      "previous": [
+        {
+          "value": 1,
+          "holders": [
+            {
+              "team": "Happy Hamsters",
+              "week": 1
+            },
+            {
+              "team": "alexdun17",
+              "week": 1
+            },
+            {
+              "team": "bigKdawgie",
+              "week": 1
+            }
+          ],
+          "brokenInWeek": 2
+        }
+      ]
+    },
+    "over_200": null,
+    "last_week": {
+      "value": 2,
+      "holders": [
+        {
+          "team": "Rumple122",
+          "week": 4
+        }
+      ],
+      "previous": [
+        {
+          "value": 1,
+          "holders": [
+            {
+              "team": "Rumple122",
+              "week": 2
+            },
+            {
+              "team": "ftcrumpfantasea",
+              "week": 2
+            }
+          ],
+          "brokenInWeek": 3
+        }
+      ]
+    },
+    "career_pf": {
+      "value": 590.84,
+      "holders": [
+        {
+          "team": "alexdun17",
+          "week": 4
+        }
+      ],
+      "previous": [
+        {
+          "value": 173,
+          "holders": [
+            {
+              "team": "bigKdawgie",
+              "week": 1
+            }
+          ],
+          "brokenInWeek": 2
+        },
+        {
+          "value": 333.86,
+          "holders": [
+            {
+              "team": "bigKdawgie",
+              "week": 2
+            }
+          ],
+          "brokenInWeek": 3
+        },
+        {
+          "value": 457.04,
+          "holders": [
+            {
+              "team": "alexdun17",
+              "week": 3
+            }
+          ],
+          "brokenInWeek": 4
+        }
+      ]
+    },
+    "titles": null,
+    "narrow_win": {
+      "value": 5.18,
+      "holders": [
+        {
+          "team": "Happy Hamsters",
+          "week": 4,
+          "opponent": "tmwasmer"
+        }
+      ],
+      "previous": [
+        {
+          "value": 6.44,
+          "holders": [
+            {
+              "team": "ToddWittenauer",
+              "week": 1,
+              "opponent": "tmwasmer"
+            }
+          ],
+          "brokenInWeek": 3
+        },
+        {
+          "value": 6.36,
+          "holders": [
+            {
+              "team": "Happy Hamsters",
+              "week": 3,
+              "opponent": "tdunwoody17"
+            }
+          ],
+          "brokenInWeek": 4
+        }
+      ]
+    }
+  },
+  "tradeRecap": {
+    "note": "The sheet's TRADE RECAP (HISTORY_DASHBOARD row 156): the week-3 trade between rosters 1 and 14. Measured points are the acquired player's points on the receiving roster after the trade week.",
+    "transactionId": "1408558773072629760",
+    "week": 3,
+    "sides": [
+      {
+        "rosterId": 1,
+        "team": "Prestige Worldwide",
+        "received": [
+          "12526"
+        ],
+        "measuredPoints": 45.2
+      }
+    ]
+  },
+  "luck": {
+    "note": "The sheet's luck table (HISTORY_DASHBOARD rows 53-61); one season, so season and career agree.",
+    "luckiestSeason": {
+      "team": "Happy Hamsters",
+      "value": 1.62
+    },
+    "unluckiestSeason": {
+      "team": "ToddWittenauer",
+      "value": -0.92
+    },
+    "mostPointsInLosses": {
+      "team": "Team Sith",
+      "value": 398.56
+    },
+    "mostCareerPointsAgainst": {
+      "team": "Team Sith",
+      "value": 653.48
+    }
+  },
+  "maxPfDefinitionChange": {
+    "resolved": "Settled, and the definition changed. The sheet and Sleeper disagreed for four teams because the sheet let a starting slot sit empty rather than start a negative score, while Sleeper always fields a full lineup. Max PF (calculated) is now \"best full lineup; every starting slot filled\", which reproduces Sleeper ppts for all 14 teams.",
+    "cause": "The only negative scores in weeks 1-4 are four team defenses, each on a roster carrying no second DEF, so a full lineup had to absorb them. That is exactly the four teams and exactly the four deltas — which is why every gap was a whole number of points, the observation this block could not previously explain.",
+    "refuted": "Slot-assignment order is not the cause, which was the earlier leading hypothesis. On this league's structure — dedicated slots plus a shared FLEX pool — greedy-by-slot, greedy-by-player and the exact DP return the same number for every team in every week.",
+    "effect": "maxPfBestLegalLineup and pointsLeftOnBench each fell by the delta for these four teams; the other ten are unchanged. The sheet therefore showed 1-2 points more for them, and its old values are recorded below.",
+    "reproduceOldNumbers": "optimalLineup(..., { allowEmptySlots: true }) returns the sheet's value for all 14 teams; asserted in packages/core/src/metrics/max-pf.investigate.test.ts.",
+    "teams": [
+      {
+        "rosterId": 3,
+        "team": "ftcrumpfantasea",
+        "sheetMaxPfBestLegalLineup": 540.94,
+        "sheetPointsLeftOnBench": 84.22,
+        "overstatedBy": 1,
+        "forcedNegativeStarter": "NE (DEF) -1 in week 3"
+      },
+      {
+        "rosterId": 6,
+        "team": "Rumple122",
+        "sheetMaxPfBestLegalLineup": 478.64,
+        "sheetPointsLeftOnBench": 129.2,
+        "overstatedBy": 1,
+        "forcedNegativeStarter": "HOU (DEF) -1 in week 1"
+      },
+      {
+        "rosterId": 12,
+        "team": "Greatest show on turf",
+        "sheetMaxPfBestLegalLineup": 603.46,
+        "sheetPointsLeftOnBench": 48.18,
+        "overstatedBy": 1,
+        "forcedNegativeStarter": "DET (DEF) -1 in week 2"
+      },
+      {
+        "rosterId": 13,
+        "team": "tmwasmer",
+        "sheetMaxPfBestLegalLineup": 500.22,
+        "sheetPointsLeftOnBench": 58.3,
+        "overstatedBy": 2,
+        "forcedNegativeStarter": "GB (DEF) -2 in week 3"
+      }
+    ]
+  }
+}

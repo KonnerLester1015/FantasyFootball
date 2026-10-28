@@ -1,0 +1,24 @@
+node_modules/
+dist/
+dist-ssr/
+build/
+*.tar.gz
+coverage/
+.vite/
+*.tsbuildinfo
+.eslintcache
+*.local
+.DS_Store
+brag-output/
+.claude/
+
+# Secrets: names only live in .env.example
+.env
+.env.*
+!.env.example
+
+# Local-only reference material (legacy Apps Script + sheet exports)
+reference/
+
+# scripts/backfill.ts --dry-run output
+.backfill/

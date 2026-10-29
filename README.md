@@ -1,7 +1,7 @@
 # Fantasy Football
 
 Fantasy football dashboards for **any Sleeper league** — standings, playoff odds, optimal-lineup
-and all-play metrics, a cross-season record book, and a weekly recap. Enter a Sleeper league ID
+and all-play metrics, a season record book, and a weekly recap. Enter a Sleeper league ID
 (or find it by username) and the site computes everything live from Sleeper's public API,
 entirely in your browser.
 
@@ -13,7 +13,7 @@ There is no backend. `apps/web` is a static React + Vite single-page app hosted 
 when you open it, `apps/web/src/data/loadSeason.ts` fetches your league directly from
 `api.sleeper.app` (which allows cross-origin reads) and hands the raw data to `packages/core`,
 a pure TypeScript library that does every calculation — normalization, optimal lineups, all-play
-and luck, playoff simulation, and the cross-season history/record book. The browser never talks
+and luck, playoff simulation, and the season record book. The browser never talks
 to anything but Sleeper and its own `localStorage` (used only to cache Sleeper's ~20 MB player
 dictionary for up to a day). See [`docs/REBUILD_PLAN.md`](docs/REBUILD_PLAN.md) for the full
 architecture and metric dictionary.
@@ -30,14 +30,14 @@ An npm-workspaces monorepo with two layers:
 
 Every route is scoped to a league: `#/<leagueId>/...`.
 
-| Route                           | Dashboard                                                               |
-| -------------------------------- | ------------------------------------------------------------------------ |
-| `#/`                             | League entry — enter a league ID, or find one by Sleeper username        |
-| `#/<leagueId>`                   | Current Season — standings, scoring, efficiency, luck, and playoff odds  |
-| `#/<leagueId>/playoffs`          | Playoffs — bracket, seeds, and simulation outcomes                       |
-| `#/<leagueId>/history`           | Record Book — season and career records, walked back through every prior season Sleeper links |
-| `#/<leagueId>/summary`           | Weekly Recap                                                             |
-| `#/<leagueId>/team/<rosterId>`   | Team detail and weekly metrics                                           |
+| Route                          | Dashboard                                                               |
+| ------------------------------ | ----------------------------------------------------------------------- |
+| `#/`                           | League entry — enter a league ID, or find one by Sleeper username       |
+| `#/<leagueId>`                 | Current Season — standings, scoring, efficiency, luck, and playoff odds |
+| `#/<leagueId>/playoffs`        | Playoffs — bracket, seeds, and simulation outcomes                      |
+| `#/<leagueId>/history`         | Record Book — this season's weekly records and who held each one before |
+| `#/<leagueId>/summary`         | Weekly Recap                                                            |
+| `#/<leagueId>/team/<rosterId>` | Team detail and weekly metrics                                          |
 
 The last league you opened is remembered in your browser (`localStorage`) so you land back on it
 next time; a "Switch league" link in the header returns to the entry screen. Missing or unplayed

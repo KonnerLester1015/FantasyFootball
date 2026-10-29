@@ -3,7 +3,7 @@
 // model.test.ts (fixtures in, golden out) and scripts/compare-golden.ts (live
 // dashboards in, golden out), so both checks mean the same thing.
 
-import type { RecordBookEntry } from '../history/records';
+import { RECORD_CODES, type RecordBookEntry } from '../history/records';
 import type { CurrentDashboard, HistoryDashboard } from './model';
 
 /** The parts of fixtures/golden/*.json this comparison reads. */
@@ -44,7 +44,6 @@ export interface GoldenFile {
     week: number;
     sides: { rosterId: number; team: string; received: string[]; measuredPoints: number }[];
   };
-  luck: Record<string, unknown>;
 }
 
 export interface GoldenDifference {
@@ -162,7 +161,8 @@ export function diffAgainstGolden(golden: GoldenFile, dashboards: Dashboards): G
 
   // The record book: current holders and every predecessor, oldest first.
   for (const [code, expected] of Object.entries(golden.recordBook)) {
-    if (code === 'note') continue;
+    // The sheet also kept cross-season records (career PF, titles) this site no longer has.
+    if (!(RECORD_CODES as readonly string[]).includes(code)) continue;
     const entry = book(code);
     const actual =
       entry === undefined || entry.value === null
@@ -214,24 +214,6 @@ export function diffAgainstGolden(golden: GoldenFile, dashboards: Dashboards): G
     check(`${at}.received`, side.received, row?.received);
     check(`${at}.measuredPoints`, side.measuredPoints, row?.measured_points);
   }
-
-  // Luck table: one season, so season and career lines agree.
-  const luck = golden.luck as Record<string, { team: string; value: number }>;
-  const line = (key: keyof HistoryDashboard['luck']) => {
-    const found = history.luck[key];
-    return {
-      team: found.holders.map((holder) => holder.team_name).join(' / '),
-      value: found.value,
-    };
-  };
-  check('luck.luckiestSeason', luck.luckiestSeason, line('luckiest_season'));
-  check('luck.unluckiestSeason', luck.unluckiestSeason, line('unluckiest_season'));
-  check('luck.mostPointsInLosses', luck.mostPointsInLosses, line('most_points_in_losses'));
-  check(
-    'luck.mostCareerPointsAgainst',
-    luck.mostCareerPointsAgainst,
-    line('most_career_points_against'),
-  );
 
   return out;
 }

@@ -5,9 +5,7 @@
 
 import {
   SleeperClient,
-  buildSeasonHistorySlice,
   buildSeasonModel,
-  combineHistory,
   currentSeasonWeek,
   partitionSettled,
   seasonLastWeek,
@@ -16,7 +14,6 @@ import {
   type HistoryDashboard,
   type PlayerDictionary,
   type PlayoffsDashboard,
-  type SeasonHistorySlice,
   type SleeperDraftPick,
   type SleeperLeague,
   type SummaryDashboard,
@@ -61,7 +58,10 @@ async function loadPlayers(): Promise<{ players: PlayerDictionary; syncedAt: Dat
   const players = trimPlayerDictionary(await sleeper.getPlayers());
   const syncedAt = new Date();
   try {
-    localStorage.setItem(PLAYERS_CACHE_KEY, JSON.stringify({ fetchedAt: syncedAt.toISOString(), players }));
+    localStorage.setItem(
+      PLAYERS_CACHE_KEY,
+      JSON.stringify({ fetchedAt: syncedAt.toISOString(), players }),
+    );
   } catch {
     // Storage full or disabled: still works, just refetches next load.
   }
@@ -91,7 +91,7 @@ async function fetchWeeklyMatchups(
   return new Map(results.ok.map(({ key, value }) => [key, value]));
 }
 
-/** The current (most recent, possibly still-live) season's full raw payload. */
+/** The entered league's season (possibly still live), as raw payloads. */
 async function fetchCurrentSeason(leagueId: string): Promise<RawSeason> {
   const [league, users, rosters] = await Promise.all([
     sleeper.getLeague(leagueId),
@@ -114,39 +114,6 @@ async function fetchCurrentSeason(leagueId: string): Promise<RawSeason> {
   };
 }
 
-/** A completed prior season: every week is scored, so there is no "current week" to find. */
-async function fetchPastSeason(league: SleeperLeague): Promise<RawSeason> {
-  const leagueId = league.league_id;
-  const [users, rosters] = await Promise.all([sleeper.getUsers(leagueId), sleeper.getRosters(leagueId)]);
-  const [matchups, winnersBracket, losersBracket] = await Promise.all([
-    fetchWeeklyMatchups(league),
-    sleeper.getWinnersBracket(leagueId),
-    sleeper.getLosersBracket(leagueId),
-  ]);
-  return {
-    league,
-    users,
-    rosters,
-    matchups,
-    winnersBracket,
-    losersBracket,
-    scoredThroughWeek: league.settings.last_scored_leg ?? seasonLastWeek(league),
-  };
-}
-
-/** The current league plus every prior season reachable via `previous_league_id`. */
-async function fetchLeagueChain(leagueId: string): Promise<RawSeason[]> {
-  const current = await fetchCurrentSeason(leagueId);
-  const seasons = [current];
-  let previousId = current.league.previous_league_id;
-  while (previousId) {
-    const league = await sleeper.getLeague(previousId);
-    seasons.push(await fetchPastSeason(league));
-    previousId = league.previous_league_id ?? null;
-  }
-  return seasons;
-}
-
 function playerNamesOf(players: PlayerDictionary): Map<string, string> {
   return new Map(
     Object.entries(players).map(([id, player]) => [
@@ -162,19 +129,15 @@ function playerNamesOf(players: PlayerDictionary): Map<string, string> {
 }
 
 /**
- * Every public read model for one league, computed fresh from Sleeper. History
- * walks `previous_league_id` back through every reachable prior season and
- * composes them with the current season using the same pure history functions
- * `buildSeasonModel` uses for the current one — see pipeline/history-slice.ts.
+ * Every public read model for one league, computed fresh from Sleeper. Only
+ * the entered league's own season is fetched; prior seasons are not.
  */
 export async function loadDashboards(leagueId: string): Promise<Dashboards> {
   const now = new Date();
-  const [chain, { players, syncedAt: playersSyncedAt }] = await Promise.all([
-    fetchLeagueChain(leagueId),
+  const [current, { players, syncedAt: playersSyncedAt }] = await Promise.all([
+    fetchCurrentSeason(leagueId),
     loadPlayers(),
   ]);
-  const [current, ...past] = chain;
-  if (!current) throw new Error(`League ${leagueId} was not found.`);
 
   let draft = null;
   let draftPicks: SleeperDraftPick[] = [];
@@ -182,7 +145,10 @@ export async function loadDashboards(leagueId: string): Promise<Dashboards> {
     const drafts = await sleeper.getDrafts(leagueId);
     const draftId = current.league.draft_id ?? drafts[0]?.draft_id;
     if (draftId) {
-      const [full, picks] = await Promise.all([sleeper.getDraft(draftId), sleeper.getDraftPicks(draftId)]);
+      const [full, picks] = await Promise.all([
+        sleeper.getDraft(draftId),
+        sleeper.getDraftPicks(draftId),
+      ]);
       draft = full;
       draftPicks = picks;
     }
@@ -210,22 +176,9 @@ export async function loadDashboards(leagueId: string): Promise<Dashboards> {
     coreVersion: 'web',
   });
 
-  const slices: SeasonHistorySlice[] = [current, ...past].map((season) =>
-    buildSeasonHistorySlice({
-      league: season.league,
-      users: season.users,
-      rosters: season.rosters,
-      matchups: season.matchups,
-      winnersBracket: season.winnersBracket,
-      scoredThroughWeek: season.scoredThroughWeek,
-      now,
-    }),
-  );
-  const history = combineHistory({ slices, asOf: model.dashboards.current.as_of, now });
-
   return {
     current: model.dashboards.current,
-    history,
+    history: model.dashboards.history,
     playoffs: model.dashboards.playoffs,
     summary: model.dashboards.summary,
     playerNames: playerNamesOf(players),
@@ -241,7 +194,10 @@ export interface FoundLeague {
 }
 
 /** Leagues a Sleeper username belongs to for a season, for the "find my league" entry flow. */
-export async function findLeaguesForUsername(username: string, season: string): Promise<FoundLeague[]> {
+export async function findLeaguesForUsername(
+  username: string,
+  season: string,
+): Promise<FoundLeague[]> {
   const trimmed = username.trim();
   if (trimmed === '') return [];
   const user = await sleeper.getUserByUsername(trimmed);

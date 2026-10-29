@@ -42,8 +42,7 @@ function displayNameOf(user: SleeperUser): string {
  * One row per league member. Re-pulled every run because display names, team
  * names and avatars change mid-season (REBUILD_PLAN §3).
  *
- * Career history keys on this `user_id`, not on roster ID: a different account
- * taking a league slot starts new totals (REBUILD_PLAN §2h).
+ * Record-book holders key on this `user_id` (REBUILD_PLAN §2f).
  */
 export function buildManagerRows({ users, syncedAt }: BuildManagerRowsInput): ManagerRow[] {
   const synced = syncedAt.toISOString();

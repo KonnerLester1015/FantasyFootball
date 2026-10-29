@@ -3,12 +3,12 @@
 ## Goal
 
 A public, static web app — **React + Vite, hosted on GitHub Pages** — that renders fantasy
-football dashboards for *any* Sleeper league. A visitor enters a Sleeper league ID (or finds one
+football dashboards for _any_ Sleeper league. A visitor enters a Sleeper league ID (or finds one
 by their Sleeper username); the browser fetches that league straight from Sleeper's public API
 and computes every number itself. There is no backend, no database, and nothing to deploy beyond
 the static site.
 
-The site renders four dashboards — Current Season, History, Playoffs, Summary — from numbers
+The site renders four dashboards — Current Season, Record Book, Playoffs, Summary — from numbers
 computed once per page load and never recalculated twice. That discipline (one computation, pure
 functions, every input including the clock handed in explicitly) is what used to make the
 Google-Apps-Script-and-Sheets predecessor to this project fight the "chart shows blank / number
@@ -24,16 +24,16 @@ Legacy source of truth for the original scoring rules, kept out of git:
 
 ## Decisions (locked)
 
-| Decision        | Detail                                                                                                                                                                                                                        |
-| ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| **Scope**        | Any Sleeper league, chosen by the visitor. Nothing is hardcoded to one league ID. Money and injury tracking are **out of scope** — not hidden, not gated, removed. Hall of Glory (dynasty) is also out of scope.               |
-| **Backend**      | **None.** No server, no database, no scheduled job, no API key, no passcode, no secret of any kind anywhere in this repo. The browser calls `api.sleeper.app` directly (it answers cross-origin reads) and computes locally. |
-| **Access**       | Fully public. Every dashboard is visible to anyone who enters a league ID; there is nothing to gate because there is no money view and no private data.                                                                      |
-| **History**      | Computed live by walking `previous_league_id` back through every season Sleeper links for the entered league. No backfill script, no stored career table — Sleeper itself is the source of truth for prior seasons.          |
-| **Front end**    | React + Vite + TypeScript, static build, hash-based routing (`#/<leagueId>/...`) so GitHub Pages' lack of server-side rewrites never matters. No SSR framework.                                                              |
-| **Math**         | All of it lives in `packages/core` as pure TypeScript, tested with **Vitest** against fixtures in `fixtures/`. `apps/web/src/data/loadSeason.ts` is the thin I/O wrapper (fetch Sleeper, call core); the web app only renders what core returns. No metric logic in `apps/web` itself. |
-| **Secrets**      | None. There is nothing to put in `.env` — no `.env.example` exists because there is no variable left to template.                                                                                                             |
-| **Caching**      | The only thing cached is Sleeper's ~20 MB player dictionary, trimmed and kept in the visitor's own `localStorage` for up to a day. Everything else is fetched fresh on every page load. No cache failure is fatal — a quota error or disabled storage just means a refetch next time. |
+| Decision      | Detail                                                                                                                                                                                                                                                                                   |
+| ------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Scope**     | Any Sleeper league, chosen by the visitor. Nothing is hardcoded to one league ID. Money and injury tracking are **out of scope** — not hidden, not gated, removed. Hall of Glory (dynasty) and multi-season history (careers, titles, season-over-season records) are also out of scope. |
+| **Backend**   | **None.** No server, no database, no scheduled job, no API key, no passcode, no secret of any kind anywhere in this repo. The browser calls `api.sleeper.app` directly (it answers cross-origin reads) and computes locally.                                                             |
+| **Access**    | Fully public. Every dashboard is visible to anyone who enters a league ID; there is nothing to gate because there is no money view and no private data.                                                                                                                                  |
+| **History**   | One season only: the league ID the visitor entered. Prior seasons are not fetched (`previous_league_id` is not followed). The Record Book holds this season's weekly records and their previous holders.                                                                                 |
+| **Front end** | React + Vite + TypeScript, static build, hash-based routing (`#/<leagueId>/...`) so GitHub Pages' lack of server-side rewrites never matters. No SSR framework.                                                                                                                          |
+| **Math**      | All of it lives in `packages/core` as pure TypeScript, tested with **Vitest** against fixtures in `fixtures/`. `apps/web/src/data/loadSeason.ts` is the thin I/O wrapper (fetch Sleeper, call core); the web app only renders what core returns. No metric logic in `apps/web` itself.   |
+| **Secrets**   | None. There is nothing to put in `.env` — no `.env.example` exists because there is no variable left to template.                                                                                                                                                                        |
+| **Caching**   | The only thing cached is Sleeper's ~20 MB player dictionary, trimmed and kept in the visitor's own `localStorage` for up to a day. Everything else is fetched fresh on every page load. No cache failure is fatal — a quota error or disabled storage just means a refetch next time.    |
 
 Supporting rules that follow from the above:
 
@@ -58,8 +58,8 @@ packages/core/
   normalize/              API JSON → table rows
   metrics/                optimal lineup, all-play, luck, consistency, records
   playoff/                simulation, bounds, tiebreaks
-  history/                identity, career, record-event replay
-  pipeline/               model.ts (one season) + history-slice.ts (cross-season composition)
+  history/                identity, record-event replay
+  pipeline/               model.ts (one season, every read model)
 config/league.json        playoff-sim tuning + the league scripts/capture-fixtures.ts pulls
                            from; the app itself takes its league from the visitor, not this file
 fixtures/                 saved Sleeper JSON + expected outputs (from the original sheet)

@@ -9,7 +9,7 @@ coverage/
 .eslintcache
 *.local
 .DS_Store
-brag-output/
+brag-output*/
 .claude/
 
 # Secrets: names only live in .env.example

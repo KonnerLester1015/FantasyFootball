@@ -1,7 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
 import golden from '../../../../fixtures/golden/2026-through-week-04.json';
-import { seasonAnalytics } from '../metrics/analytics';
 import { buildMatchupRows, type MatchupResult } from '../normalize/matchups';
 import { buildTeamRows } from '../normalize/rosters';
 import { buildIdentityIndex } from '../normalize/users';
@@ -13,10 +12,10 @@ import {
   type RecordCode,
   type ReplayInput,
 } from './records';
-import { historySeasons, historyWeeks, type HistorySeason, type HistoryWeek } from './seasons';
+import { historyWeeks, type HistoryWeek } from './weeks';
 
 /**
- * Record-event replay — docs/REBUILD_PLAN.md §2h.
+ * Record-event replay — docs/REBUILD_PLAN.md §2f.
  *
  * The rules under test: a record is replayed from saved results in order;
  * only a strict improvement breaks it and names its predecessors; a tie adds
@@ -49,7 +48,7 @@ function week(
 }
 
 function input(overrides: Partial<ReplayInput>): ReplayInput {
-  return { weeks: [], seasons: [], observedAt: OBSERVED, ...overrides };
+  return { weeks: [], observedAt: OBSERVED, ...overrides };
 }
 
 function entry(book: readonly RecordBookEntry[], code: RecordCode): RecordBookEntry {
@@ -118,10 +117,6 @@ describe('the legacy record fixture', () => {
       broken_in_week: 4,
     });
     expect(names(crowns.previous[0]?.holders ?? [])).toEqual(['Coalition', 'Pudgy', 'tdunwoody17']);
-  });
-
-  it('reports no championship record rather than a zero', () => {
-    expect(entry(book, 'titles')).toMatchObject({ value: null, holders: [], previous: [] });
   });
 
   it('is unchanged by a duplicated week row', () => {
@@ -279,81 +274,6 @@ describe('replay rules', () => {
     expect(entry(book, 'over_200').value).toBeNull();
   });
 
-  it('takes completed-season and title records from completed seasons only', () => {
-    const base: Omit<
-      HistorySeason,
-      | 'league_id'
-      | 'season'
-      | 'roster_id'
-      | 'identity'
-      | 'points_for'
-      | 'champion'
-      | 'season_complete'
-    > = {
-      manager_name: 'm',
-      team_name: 't',
-      wins: 0,
-      losses: 0,
-      ties: 0,
-      points_against: 0,
-      all_play_comparisons: 0,
-      all_play_win_equivalents: 0,
-      schedule_luck: null,
-      points_in_losses: 0,
-      playoff_appearance: null,
-      championship_appearance: null,
-    };
-    const { book } = replayRecords(
-      input({
-        seasons: [
-          {
-            ...base,
-            league_id: 'a',
-            season: '2025',
-            roster_id: 1,
-            identity: 'id-1',
-            team_name: 'One',
-            points_for: 1500,
-            champion: true,
-            season_complete: true,
-          },
-          {
-            ...base,
-            league_id: 'a',
-            season: '2025',
-            roster_id: 2,
-            identity: 'id-2',
-            team_name: 'Two',
-            points_for: 1300,
-            champion: false,
-            season_complete: true,
-          },
-          {
-            ...base,
-            league_id: 'b',
-            season: '2026',
-            roster_id: 1,
-            identity: 'id-1',
-            team_name: 'One',
-            points_for: 400,
-            champion: null,
-            season_complete: false,
-          },
-        ],
-      }),
-    );
-    expect(entry(book, 'hi_season')).toMatchObject({
-      value: 1500,
-      holders: [expect.objectContaining({ identity: 'id-1', season: '2025', week: null })],
-    });
-    // The unfinished 400 is not a "lowest completed season".
-    expect(entry(book, 'lo_season')).toMatchObject({ value: 1300 });
-    expect(entry(book, 'titles')).toMatchObject({
-      value: 1,
-      holders: [expect.objectContaining({ identity: 'id-1' })],
-    });
-  });
-
   it('writes deterministic event rows the record_events table accepts', () => {
     const { events } = replayRecords(input({ weeks: legacyWeeks() }));
     expect(new Set(events.map((event) => event.$id)).size).toBe(events.length);
@@ -367,7 +287,7 @@ describe('replay rules', () => {
     }
   });
 
-  it('lists all twelve records, unheld ones included', () => {
+  it('lists every record, unheld ones included', () => {
     expect(replayRecords(input({})).book.map((row) => row.record_code)).toEqual([...RECORD_CODES]);
   });
 });
@@ -397,12 +317,6 @@ describe('2026 record book through week 4', () => {
   const { book } = replayRecords(
     input({
       weeks: historyWeeks({ season: fixtures.FIXTURE_SEASON, matchups, teams }),
-      seasons: historySeasons({
-        teams,
-        analytics: seasonAnalytics(matchups),
-        brackets: [],
-        seasonComplete: false,
-      }),
     }),
   );
 
@@ -416,7 +330,7 @@ describe('2026 record book through week 4', () => {
   const shape = (
     holders: readonly {
       team_name: string;
-      week: number | null;
+      week: number;
       opponent_team_name?: string | null;
     }[],
   ) =>
@@ -430,19 +344,7 @@ describe('2026 record book through week 4', () => {
   const sorted = (holders: GoldenHolder[]) =>
     holders.slice().sort((a, b) => a.team.localeCompare(b.team));
 
-  const codes = [
-    'hi_week',
-    'lo_week',
-    'crowns',
-    'over_150',
-    'over_200',
-    'last_week',
-    'career_pf',
-    'titles',
-    'narrow_win',
-  ] as const;
-
-  for (const code of codes) {
+  for (const code of RECORD_CODES) {
     it(`matches the sheet's ${code} record and its chain of previous holders`, () => {
       const expected = (golden.recordBook as unknown as Record<string, GoldenRecord>)[code] ?? null;
       const actual = entry(book, code);

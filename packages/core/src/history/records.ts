@@ -1,9 +1,8 @@
-import { round2 } from '../numbers';
 import { recordEventId } from '../normalize/ids';
-import type { HistorySeason, HistoryWeek } from './seasons';
+import type { HistoryWeek } from './weeks';
 
 /**
- * Record-event replay — docs/REBUILD_PLAN.md §2h.
+ * Record-event replay — docs/REBUILD_PLAN.md §2f.
  *
  * The record book is rebuilt by replaying saved results in order, every
  * time, so a corrected score or a removed duplicate changes the book rather
@@ -16,13 +15,13 @@ import type { HistorySeason, HistoryWeek } from './seasons';
  *     break names everyone who held that value
  *   - a **zero count never qualifies**: nobody holds "most weeks above 200"
  *     at 0, and so nobody can be listed as having lost it
- *   - running totals (crowns, 150/200 weeks, last places, career PF, titles)
- *     are re-ranked after each week across **every** manager seen so far, not
+ *   - running totals (crowns, 150/200 weeks, last places) are re-ranked after each week across **every** manager seen so far, not
  *     row by row, so a mid-week partial count never sets a record
  *   - weekly crowns and last places come from the scores, never from a stored
  *     flag, and only in a week where every participant has a score
  *
- * **Scope is the caller's**: pass finalized regular-season weeks.
+ * **Scope is the caller's**: pass one season's finalized regular-season weeks.
+ * Every record is a within-season record; nothing here spans seasons.
  */
 
 export const RECORD_CODES = [
@@ -32,10 +31,6 @@ export const RECORD_CODES = [
   'over_150',
   'over_200',
   'last_week',
-  'hi_season',
-  'lo_season',
-  'career_pf',
-  'titles',
   'narrow_win',
 ] as const;
 
@@ -49,18 +44,10 @@ const LABELS: Record<RecordCode, string> = {
   over_150: 'Most weeks above 150',
   over_200: 'Most weeks above 200',
   last_week: 'Most weekly last-place scores',
-  hi_season: 'Highest scoring completed season',
-  lo_season: 'Lowest scoring completed season',
-  career_pf: 'Most career Points For',
-  titles: 'Most championship titles',
   narrow_win: 'Narrowest victory',
 };
 
-const LOWER_IS_BETTER: ReadonlySet<RecordCode> = new Set<RecordCode>([
-  'lo_week',
-  'lo_season',
-  'narrow_win',
-]);
+const LOWER_IS_BETTER: ReadonlySet<RecordCode> = new Set<RecordCode>(['lo_week', 'narrow_win']);
 
 /** Counts: a zero is "no result", never a record. */
 const COUNTS: ReadonlySet<RecordCode> = new Set<RecordCode>([
@@ -68,7 +55,6 @@ const COUNTS: ReadonlySet<RecordCode> = new Set<RecordCode>([
   'over_150',
   'over_200',
   'last_week',
-  'titles',
 ]);
 
 /** Running totals, re-ranked as a whole after each step. */
@@ -77,8 +63,6 @@ const RUNNING: ReadonlySet<RecordCode> = new Set<RecordCode>([
   'over_150',
   'over_200',
   'last_week',
-  'career_pf',
-  'titles',
 ]);
 
 /** Who holds a record value, and where it was set. */
@@ -86,11 +70,8 @@ export interface RecordBookHolder {
   identity: string;
   team_name: string;
   season: string;
-  /**
-   * The score's week for a single-week record; the latest counted week for a
-   * running total; null for a season-level record.
-   */
-  week: number | null;
+  /** The score's week for a single-week record; the latest counted week for a running total. */
+  week: number;
   /** The beaten team, for the narrowest victory; otherwise null. */
   opponent_team_name: string | null;
 }
@@ -100,8 +81,7 @@ export interface PreviousRecord {
   value: number;
   holders: RecordBookHolder[];
   broken_in_season: string;
-  /** Null when broken by a season-level result. */
-  broken_in_week: number | null;
+  broken_in_week: number;
 }
 
 /** One record as the book shows it now. */
@@ -122,7 +102,7 @@ export interface RecordEventRow {
   season: string;
   record_code: RecordCode;
   record_label: string;
-  week: number | null;
+  week: number;
   value: number;
   holder_ids: string[];
   holder_names: string[];
@@ -136,14 +116,13 @@ export interface RecordEventRow {
 
 export interface ReplayInput {
   weeks: readonly HistoryWeek[];
-  seasons: readonly HistorySeason[];
   observedAt: Date;
 }
 
 export interface RecordReplay {
   /** Every set, tie and break, in the order they happened. */
   events: RecordEventRow[];
-  /** All twelve records, in RECORD_CODES order. */
+  /** Every record, in RECORD_CODES order. */
   book: RecordBookEntry[];
 }
 
@@ -152,8 +131,8 @@ interface Candidate {
   code: RecordCode;
   league_id: string;
   season: string;
-  /** The step: the week replayed, or null for a season-level step. */
-  step: number | null;
+  /** The week replayed. */
+  step: number;
   value: number;
   holder: RecordBookHolder;
 }
@@ -174,8 +153,7 @@ function sortHolders(holders: readonly RecordBookHolder[]): RecordBookHolder[] {
       (a, b) =>
         a.team_name.localeCompare(b.team_name) ||
         a.identity.localeCompare(b.identity) ||
-        Number(a.season) - Number(b.season) ||
-        (a.week ?? Infinity) - (b.week ?? Infinity),
+        a.week - b.week,
     );
 }
 
@@ -192,7 +170,7 @@ function distinct<T>(rows: readonly T[], key: (row: T) => string): T[] {
   return [...seen.values()];
 }
 
-function candidates({ weeks, seasons }: ReplayInput): Candidate[] {
+function candidates({ weeks }: ReplayInput): Candidate[] {
   const out: Candidate[] = [];
   const add = (candidate: Candidate) => {
     if (!Number.isFinite(candidate.value)) return;
@@ -204,7 +182,6 @@ function candidates({ weeks, seasons }: ReplayInput): Candidate[] {
     weeks,
     (row) => `${row.league_id}|${row.season}|${row.week}|${row.identity}`,
   );
-  const years = distinct(seasons, (row) => `${row.league_id}|${row.identity}`);
 
   // Single-week records.
   for (const row of games) {
@@ -228,31 +205,10 @@ function candidates({ weeks, seasons }: ReplayInput): Candidate[] {
     }
   }
 
-  // Completed-season scoring.
-  for (const row of years.filter((year) => year.season_complete)) {
-    const holder: RecordBookHolder = {
-      identity: row.identity,
-      team_name: row.team_name,
-      season: row.season,
-      week: null,
-      opponent_team_name: null,
-    };
-    const at = { league_id: row.league_id, season: row.season, step: null };
-    add({ ...at, code: 'hi_season', value: row.points_for, holder });
-    add({ ...at, code: 'lo_season', value: row.points_for, holder });
-  }
-
   // Running weekly totals, re-ranked after each week.
-  const participants = new Map<string, Set<string>>();
-  for (const row of games) {
-    const key = `${row.league_id}|${row.season}`;
-    participants.set(key, (participants.get(key) ?? new Set()).add(row.identity));
-  }
-  const steps = new Map<string, HistoryWeek[]>();
-  for (const row of games) {
-    const key = `${row.season}|${row.week}`;
-    steps.set(key, [...(steps.get(key) ?? []), row]);
-  }
+  const participants = new Set(games.map((row) => row.identity));
+  const steps = new Map<number, HistoryWeek[]>();
+  for (const row of games) steps.set(row.week, [...(steps.get(row.week) ?? []), row]);
   const totals = new Map<
     string,
     {
@@ -260,30 +216,20 @@ function candidates({ weeks, seasons }: ReplayInput): Candidate[] {
       last: number;
       over150: number;
       over200: number;
-      pf: number;
       holder: RecordBookHolder;
-      league_id: string;
     }
   >();
-  const ordered = [...steps.values()].sort(
-    (a, b) =>
-      Number((a[0] as HistoryWeek).season) - Number((b[0] as HistoryWeek).season) ||
-      (a[0] as HistoryWeek).week - (b[0] as HistoryWeek).week,
-  );
+  const ordered = [...steps.entries()].sort(([a], [b]) => a - b).map(([, step]) => step);
   for (const step of ordered) {
     const first = step[0] as HistoryWeek;
     for (const row of step) {
-      const peers = step.filter((peer) => peer.league_id === row.league_id);
-      const full =
-        peers.length > 1 &&
-        peers.length === participants.get(`${row.league_id}|${row.season}`)?.size;
-      const scores = peers.map((peer) => peer.points);
+      const full = step.length > 1 && step.length === participants.size;
+      const scores = step.map((peer) => peer.points);
       const total = totals.get(row.identity) ?? {
         crowns: 0,
         last: 0,
         over150: 0,
         over200: 0,
-        pf: 0,
         holder: {
           identity: row.identity,
           team_name: row.team_name,
@@ -291,13 +237,11 @@ function candidates({ weeks, seasons }: ReplayInput): Candidate[] {
           week: row.week,
           opponent_team_name: null,
         },
-        league_id: row.league_id,
       };
       if (full && row.points === Math.max(...scores)) total.crowns += 1;
       if (full && row.points === Math.min(...scores)) total.last += 1;
       if (row.points > 150) total.over150 += 1;
       if (row.points > 200) total.over200 += 1;
-      total.pf = round2(total.pf + row.points);
       total.holder = {
         identity: row.identity,
         team_name: row.team_name,
@@ -305,7 +249,6 @@ function candidates({ weeks, seasons }: ReplayInput): Candidate[] {
         week: row.week,
         opponent_team_name: null,
       };
-      total.league_id = row.league_id;
       totals.set(row.identity, total);
     }
     for (const total of totals.values()) {
@@ -319,47 +262,6 @@ function candidates({ weeks, seasons }: ReplayInput): Candidate[] {
       add({ ...at, code: 'over_150', value: total.over150 });
       add({ ...at, code: 'over_200', value: total.over200 });
       add({ ...at, code: 'last_week', value: total.last });
-      add({ ...at, code: 'career_pf', value: total.pf });
-    }
-  }
-
-  // Running championship count, re-ranked after each completed season.
-  const titles = new Map<string, { count: number; holder: RecordBookHolder }>();
-  const finished = years.filter((row) => row.season_complete);
-  for (const season of [...new Set(finished.map((row) => row.season))].sort(
-    (a, b) => Number(a) - Number(b),
-  )) {
-    const inSeason = finished.filter((row) => row.season === season);
-    for (const row of inSeason) {
-      const entry = titles.get(row.identity) ?? {
-        count: 0,
-        holder: {
-          identity: row.identity,
-          team_name: row.team_name,
-          season,
-          week: null,
-          opponent_team_name: null,
-        },
-      };
-      entry.count += row.champion === true ? 1 : 0;
-      entry.holder = {
-        identity: row.identity,
-        team_name: row.team_name,
-        season,
-        week: null,
-        opponent_team_name: null,
-      };
-      titles.set(row.identity, entry);
-    }
-    for (const entry of titles.values()) {
-      add({
-        code: 'titles',
-        league_id: (inSeason[0] as HistorySeason).league_id,
-        season,
-        step: null,
-        value: entry.count,
-        holder: entry.holder,
-      });
     }
   }
 
@@ -375,11 +277,7 @@ export function replayRecords(input: ReplayInput): RecordReplay {
   const ordered = [...groups.values()].sort((a, b) => {
     const x = a[0] as Candidate;
     const y = b[0] as Candidate;
-    return (
-      Number(x.season) - Number(y.season) ||
-      (x.step ?? Infinity) - (y.step ?? Infinity) ||
-      RECORD_CODES.indexOf(x.code) - RECORD_CODES.indexOf(y.code)
-    );
+    return x.step - y.step || RECORD_CODES.indexOf(x.code) - RECORD_CODES.indexOf(y.code);
   });
 
   const states = new Map<RecordCode, State>();

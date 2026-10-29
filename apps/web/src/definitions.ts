@@ -5,23 +5,18 @@
 export const DEF = {
   record: 'Your win-loss-tie record in regular-season matchups.',
   winPct: 'Percentage of regular-season matchups you won.',
-  pointsFor:
-    'Total points scored by your starting lineups during the regular season.',
+  pointsFor: 'Total points scored by your starting lineups during the regular season.',
   pointsAgainst: 'Total points scored by your opponents during the regular season.',
   pointDiff:
     'Your total points scored minus points allowed. Positive means you outscored your opponents overall.',
-  maxPf:
-    'The most points your roster could have scored with perfect lineup decisions.',
+  maxPf: 'The most points your roster could have scored with perfect lineup decisions.',
   benchPoints:
     'Points missed by starting lower-scoring players instead of your best available lineup.',
-  efficiency:
-    'Percentage of your roster’s maximum possible points that you actually scored.',
+  efficiency: 'Percentage of your roster’s maximum possible points that you actually scored.',
   allPlay:
     'Imagine playing every other team each week, not just your opponent. This is how much of the league your scores would beat.',
-  luck:
-    'How many wins your actual schedule added or cost compared to an average schedule.',
-  consistency:
-    'How much your weekly scores vary. Lower means more consistent scoring.',
+  luck: 'How many wins your actual schedule added or cost compared to an average schedule.',
+  consistency: 'How much your weekly scores vary. Lower means more consistent scoring.',
   crowns: 'Number of weeks you finished with the league’s highest score.',
   lastPlace: 'Number of weeks you finished with the league’s lowest score.',
   over150: 'Number of weeks you scored more than 150 points.',
@@ -47,11 +42,5 @@ export const DEF = {
   medianCutoff: 'Typical win total of the last team to make the playoffs in the simulations.',
   scenario:
     'Your playoff chance if you finish with exactly this many more wins, from the simulated seasons that ended that way. N/A when too few did.',
-  careerPf: 'Every point scored across all seasons tracked so far.',
-  avgPf: 'Average points scored per game across your career.',
-  titles: 'League championships won.',
-  expectedWins: 'All-play wins summed across weeks: how many games your scores would win against everyone.',
-  luckWins: 'Career schedule luck: actual wins minus what your scores usually earn.',
-  seasonPf: 'Total points scored in each season, oldest first.',
-  recordBook: 'League records since this tool started tracking your league.',
+  recordBook: 'League records set this season, and who held each one before.',
 } as const;

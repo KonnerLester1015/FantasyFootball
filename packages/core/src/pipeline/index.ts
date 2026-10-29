@@ -3,4 +3,3 @@
 
 export * from './plan';
 export * from './model';
-export * from './history-slice';

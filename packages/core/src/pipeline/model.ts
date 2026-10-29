@@ -1,6 +1,5 @@
-import { careerTotals, luckTable, type CareerRow, type LuckTable } from '../history/career';
 import { replayRecords, type RecordBookEntry, type RecordEventRow } from '../history/records';
-import { historySeasons, historyWeeks, type HistorySeason } from '../history/seasons';
+import { historyWeeks } from '../history/weeks';
 import { activityCounts, type ActivityRow } from '../metrics/activity';
 import { positionLeaders, type PositionLeadersWeek } from '../metrics/leaders';
 import {
@@ -253,14 +252,10 @@ export interface PlayoffsDashboard {
   brackets: { winners: BracketGameView[]; losers: BracketGameView[] };
 }
 
+/** This season's record book. Nothing here spans seasons. */
 export interface HistoryDashboard {
   as_of: AsOf;
-  seasons: HistorySeason[];
-  careers: CareerRow[];
-  luck: LuckTable;
   record_book: RecordBookEntry[];
-  /** Season PF per manager, oldest first: the trajectory chart's series. */
-  season_pf: { identity: string; team_name: string; season: string; points_for: number }[];
 }
 
 export interface SummaryDashboard {
@@ -483,16 +478,8 @@ export function buildSeasonModel(input: SeasonModelInput): SeasonModel {
   const forecastOf = (rosterId: number) => forecast.rows.find((row) => row.roster_id === rosterId);
 
   // --- History -------------------------------------------------------------
-  const seasons = historySeasons({
-    teams: teamRows,
-    analytics: seasonRows,
-    brackets: bracketRows,
-    seasonComplete,
-  });
-  const careers = careerTotals(seasons);
   const replay = replayRecords({
     weeks: historyWeeks({ season, matchups: scoredRows, teams: teamRows }),
-    seasons,
     observedAt: now,
   });
 
@@ -573,18 +560,7 @@ export function buildSeasonModel(input: SeasonModelInput): SeasonModel {
 
   const history: HistoryDashboard = {
     as_of: asOf,
-    seasons,
-    careers,
-    luck: luckTable(seasons, careers),
     record_book: replay.book,
-    season_pf: seasons
-      .map((row) => ({
-        identity: row.identity,
-        team_name: row.team_name,
-        season: row.season,
-        points_for: row.points_for,
-      }))
-      .sort((a, b) => Number(a.season) - Number(b.season) || a.identity.localeCompare(b.identity)),
   };
 
   const latest = scoredThrough >= 1 ? scoredThrough : null;

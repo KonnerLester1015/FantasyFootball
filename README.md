@@ -7,6 +7,8 @@ entirely in your browser.
 
 **Live site:** <https://konnerlester1015.github.io/FantasyFootball/>
 
+![Poster Image](docs/POSTER_IMAGE.jpg)
+
 ## How it works
 
 There is no backend. `apps/web` is a static React + Vite single-page app hosted on GitHub Pages;

@@ -122,6 +122,19 @@ export function MetricHead({ id, title, def }: { id?: string; title: string; def
   );
 }
 
+export function SiteFooter() {
+  return (
+    <footer className="site-footer">
+      <p>
+        &copy; 2026 Fantasy Football ·{' '}
+        <a href="https://github.com/KonnerLester1015/FantasyFootball" target="_blank" rel="noreferrer">
+          Source Code
+        </a>
+      </p>
+    </footer>
+  );
+}
+
 export function Chip({ tone, children }: { tone: 'in' | 'out' | 'tie' | 'na'; children: ReactNode }) {
   return <span className={`chip chip-${tone}`}>{children}</span>;
 }

@@ -14,7 +14,7 @@ import { LeagueEntryPage } from './pages/LeagueEntryPage';
 import { PlayoffsPage } from './pages/PlayoffsPage';
 import { SummaryPage } from './pages/SummaryPage';
 import { TeamPage } from './pages/TeamPage';
-import { Card, Football, Helmet, Spinner } from './ui';
+import { Card, Football, Helmet, SiteFooter, Spinner } from './ui';
 
 const NAV = [
   { path: '/', label: 'Current Season' },
@@ -38,6 +38,14 @@ function rememberLeague(leagueId: string): void {
     localStorage.setItem(LAST_LEAGUE_KEY, leagueId);
   } catch {
     // Storage disabled: the entry screen just shows again next visit.
+  }
+}
+
+function forgetLeague(): void {
+  try {
+    localStorage.removeItem(LAST_LEAGUE_KEY);
+  } catch {
+    // Storage disabled: nothing was remembered.
   }
 }
 
@@ -88,7 +96,9 @@ function LeagueApp({ leagueId, subPath }: { leagueId: string; subPath: string })
       (next) => {
         setData(next);
         setError(null);
-        rememberLeague(leagueId);
+        // A fetch that finishes after the visitor switched away must not
+        // re-remember the league they just left.
+        if (LEAGUE_PATH.exec(readPath())?.[1] === leagueId) rememberLeague(leagueId);
       },
       (cause: unknown) => setError(cause instanceof Error ? cause.message : String(cause)),
     );
@@ -133,7 +143,7 @@ function LeagueApp({ leagueId, subPath }: { leagueId: string; subPath: string })
               </li>
             ))}
             <li>
-              <a className="pill" href="#/">
+              <a className="pill" href="#/" onClick={forgetLeague}>
                 Switch league
               </a>
             </li>
@@ -163,9 +173,7 @@ function LeagueApp({ leagueId, subPath }: { leagueId: string; subPath: string })
           <Route path={subPath} data={data} />
         )}
       </main>
-      <footer className="site-footer">
-        <p>&copy; 2026 Fantasy Football</p>
-      </footer>
+      <SiteFooter />
     </>
   );
 }

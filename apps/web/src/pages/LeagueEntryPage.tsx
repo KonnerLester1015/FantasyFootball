@@ -1,6 +1,6 @@
 import { useState, type FormEvent } from 'react';
 import { findLeaguesForUsername, type FoundLeague } from '../data/loadSeason';
-import { Card, Football } from '../ui';
+import { Card, Football, SiteFooter } from '../ui';
 
 const LEAGUE_ID_RE = /^\d+$/;
 
@@ -150,9 +150,7 @@ export function LeagueEntryPage({ onSelect }: { onSelect: (leagueId: string) => 
           )}
         </Card>
       </main>
-      <footer className="site-footer">
-        <p>&copy; 2026 Fantasy Football</p>
-      </footer>
+      <SiteFooter />
     </>
   );
 }

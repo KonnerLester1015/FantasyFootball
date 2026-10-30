@@ -69,8 +69,7 @@ export function LeagueEntryPage({ onSelect }: { onSelect: (leagueId: string) => 
           <div>
             <h1>Pull up any Sleeper league</h1>
             <p className="hero-status">
-              Enter a Sleeper league ID, or find it by your Sleeper username. Nothing about your
-              league is sent anywhere but your own browser and Sleeper itself.
+              Enter a Sleeper league ID, or find it by your Sleeper username.
             </p>
           </div>
         </Card>

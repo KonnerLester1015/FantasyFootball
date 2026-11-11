@@ -6,6 +6,7 @@ import { DEF } from '../definitions';
 import { FieldGoal } from '../FieldGoal';
 import { count, NA, pct, pctTone, pts, signed } from '../format';
 import { Bars, Card, HeroFootball, MetricHead, StatCard, Tabs, WeekPicker, names } from '../ui';
+import { StandingsRace } from './StandingsRace';
 import { finalizedWeeks, leaders, PositionChip, recordWithPct, TeamLink, teamNames, type TeamNames } from './shared';
 
 type SortKey = 'standings' | 'points' | 'odds';
@@ -72,6 +73,7 @@ export function CurrentPage({ data }: { data: Dashboards }) {
       </div>
 
       <Standings teams={current.teams} medianGames={as_of.median_games} />
+      <StandingsRace current={current} name={name} i={2} />
       <SeasonCharts teams={current.teams} />
       <WeekByWeek current={current} name={name} />
 

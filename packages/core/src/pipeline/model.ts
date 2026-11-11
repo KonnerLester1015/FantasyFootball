@@ -13,7 +13,14 @@ import {
 } from '../metrics/analytics';
 import { rollUpLineups, weeklyLineups, type WeeklyLineupRow } from '../metrics/lineup';
 import { rosterSeasons, teamLineups, type TeamLineupWeek, type TeamRosterView } from '../metrics/roster';
-import { buildStandings, currentStreak, type StandingsEntry, type Streak } from '../metrics/standings';
+import {
+  buildStandings,
+  currentStreak,
+  rankHistory,
+  type StandingsEntry,
+  type Streak,
+  type WeeklyRank,
+} from '../metrics/standings';
 import {
   tradeEstimates,
   tradeRecap,
@@ -264,6 +271,8 @@ export interface CurrentDashboard {
   lineups: TeamLineupWeek[];
   /** Every roster's players and what each has scored for that roster this season. */
   rosters: TeamRosterView[];
+  /** Where every team stood after each scored regular-season week. */
+  rank_history: WeeklyRank[];
 }
 
 export interface BracketGameView extends BracketSlotRow {
@@ -592,6 +601,11 @@ export function buildSeasonModel(input: SeasonModelInput): SeasonModel {
       players: playerRows,
     }),
     rosters: rosterSeasons({ teams: teamRows, playerScores: scoredPlayerScores, players: playerRows }),
+    rank_history: rankHistory({
+      matchups: scoredRegular,
+      rosterIds,
+      ...(medianGames ? { medianResults: vsMedian } : {}),
+    }),
   };
 
   const withLabels = (rows: BracketSlotRow[]): BracketGameView[] =>

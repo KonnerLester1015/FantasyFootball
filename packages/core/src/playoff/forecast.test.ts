@@ -303,6 +303,39 @@ describe('forecastPlayoffs', () => {
     expect(leaderWins?.qualifying_cases).toBe(leaderWins?.simulated_cases);
   });
 
+  it('models the extra league-median game in a median league', () => {
+    // Week 1: 1 beat 4, 2 beat 3; the median (115) splits 1 and 2 from 3 and 4,
+    // so the official records are 2-0, 2-0, 0-2, 0-2 after one week.
+    const forecast = forecastPlayoffs({
+      teams: [
+        team({ roster_id: 1, wins: 2, points_for: 150, points_against: 90 }),
+        team({ roster_id: 2, wins: 2, points_for: 120, points_against: 110 }),
+        team({ roster_id: 3, losses: 2, points_for: 110, points_against: 120 }),
+        team({ roster_id: 4, losses: 2, points_for: 90, points_against: 150 }),
+      ],
+      matchups: [
+        game(1, 1, 1, 'W', 150),
+        game(1, 4, 1, 'L', 90),
+        game(1, 2, 2, 'W', 120),
+        game(1, 3, 2, 'L', 110),
+        game(2, 1, 1),
+        game(2, 2, 1),
+        game(2, 3, 2),
+        game(2, 4, 2),
+      ],
+      finalizedThroughWeek: 1,
+      settings: settings({ playoffTeams: 2, medianGames: true }),
+    });
+
+    expect(forecast.note).not.toMatch(/withheld/i);
+    expect(forecast.rows.map((row) => row.remaining_games)).toEqual([2, 2, 2, 2]);
+    const total = forecast.rows.reduce((sum, row) => sum + (row.playoff_chance_pct ?? 0), 0);
+    expect(total).toBeCloseTo(200, 6);
+    // A team that wins both of its week-2 games finishes 4-0 and is in.
+    const sweep = forecast.scenarios.find((row) => row.roster_id === 3 && row.additional_wins === 2);
+    expect(sweep?.additional_losses).toBe(0);
+  });
+
   describe('withholds the forecast', () => {
     const cases: [string, (input: ForecastInput) => ForecastInput, RegExp][] = [
       [
@@ -311,9 +344,9 @@ describe('forecastPlayoffs', () => {
         /incomplete schedule/i,
       ],
       [
-        'with league-median games',
+        'with league-median games whose official records count only head-to-head games',
         (input) => ({ ...input, settings: { ...input.settings, medianGames: true } }),
-        /median/i,
+        /official record mismatch/i,
       ],
       [
         'with divisions',

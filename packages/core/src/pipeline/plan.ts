@@ -24,6 +24,20 @@ export function currentSeasonWeek(league: SleeperLeague, nflWeek: number): numbe
 }
 
 /**
+ * The week being played (or up next) for one league, from the league alone:
+ * the week after the last scored one, or Sleeper's own `leg` if that is later.
+ * A complete league reads as its championship week; a league that has not
+ * started reads 0. Clamped to the league calendar.
+ */
+export function leagueCurrentWeek(league: SleeperLeague, scoredThroughWeek: number): number {
+  const lastWeek = seasonLastWeek(league);
+  if (league.status === 'complete') return lastWeek;
+  if (league.status !== 'in_season' && league.status !== 'post_season') return 0;
+  const next = Math.max(scoredThroughWeek + 1, league.settings.leg ?? 0);
+  return Math.max(0, Math.min(next, lastWeek));
+}
+
+/**
  * True once Sleeper's bracket is the real one rather than a projection from
  * today's standings: two weeks before the postseason, or once the league is
  * complete.

@@ -17,3 +17,4 @@ export * from './analytics';
 export * from './trades';
 export * from './activity';
 export * from './leaders';
+export * from './roster';

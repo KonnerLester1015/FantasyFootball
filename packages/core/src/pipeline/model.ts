@@ -4,6 +4,7 @@ import { activityCounts, type ActivityRow } from '../metrics/activity';
 import { positionLeaders, type PositionLeadersWeek } from '../metrics/leaders';
 import {
   leagueRecords,
+  medianResults,
   seasonAnalytics,
   weeklyAnalytics,
   type LeagueRecords,
@@ -11,7 +12,8 @@ import {
   type WeeklyAnalyticsRow,
 } from '../metrics/analytics';
 import { rollUpLineups, weeklyLineups, type WeeklyLineupRow } from '../metrics/lineup';
-import { buildStandings, type StandingsEntry } from '../metrics/standings';
+import { rosterSeasons, teamLineups, type TeamLineupWeek, type TeamRosterView } from '../metrics/roster';
+import { buildStandings, currentStreak, type StandingsEntry, type Streak } from '../metrics/standings';
 import {
   tradeEstimates,
   tradeRecap,
@@ -195,11 +197,26 @@ export interface AsOf {
   finalized_through_week: number;
   regular_season_weeks: number;
   season_complete: boolean;
+  /** Teams that make the playoffs. 0 when Sleeper reports none. */
+  playoff_teams: number;
+  /** First-round byes that playoff field implies (6 teams: 2). */
+  playoff_byes: number;
+  /** Sleeper's `league_average_match`: every week is also a game against the league median. */
+  median_games: boolean;
 }
 
 /** One standings line with every season metric for that team. */
 export interface CurrentTeam extends StandingsEntry {
   owner_id: string | null;
+  /**
+   * The season's best possible lineup total: Sleeper's own number, or ours when
+   * Sleeper reports none. The site's one Max PF; efficiency and bench use it.
+   */
+  max_pf: number | null;
+  /** Max PF − PF. Null without a Max PF. */
+  bench_points: number | null;
+  /** PF / Max PF, percent 0-100. Null without a Max PF. */
+  lineup_efficiency: number | null;
   max_pf_calculated: number | null;
   points_left_on_bench: number | null;
   efficiency: number | null;
@@ -216,6 +233,8 @@ export interface CurrentTeam extends StandingsEntry {
   playoff_chance_pct: number | null;
   position_now: 'inside' | 'outside' | 'tied_at_cutoff' | null;
   playoff_status: string;
+  /** The run of identical results the team is on now. Null before any decided game. */
+  streak: Streak | null;
 }
 
 export interface CurrentWeekCell {
@@ -230,6 +249,8 @@ export interface CurrentWeekCell {
   weekly_last: boolean;
   optimal_points: number | null;
   bench_gap: number | null;
+  /** The week's game against the league median; null when the league has none. */
+  median_result: 'W' | 'L' | 'T' | null;
 }
 
 export interface CurrentDashboard {
@@ -239,6 +260,10 @@ export interface CurrentDashboard {
   weeks: CurrentWeekCell[];
   records: LeagueRecords;
   trades: { recap: TradeRecapRow[]; estimates: TradeEstimateRow[] };
+  /** Every roster's lineup for each scored week, plus the week being played now. */
+  lineups: TeamLineupWeek[];
+  /** Every roster's players and what each has scored for that roster this season. */
+  rosters: TeamRosterView[];
 }
 
 export interface BracketGameView extends BracketSlotRow {
@@ -484,22 +509,33 @@ export function buildSeasonModel(input: SeasonModelInput): SeasonModel {
   });
 
   // --- Read models ---------------------------------------------------------
+  const playoffTeams = league.settings.playoff_teams ?? 0;
+  const medianGames = (league.settings.league_average_match ?? 0) !== 0;
   const asOf: AsOf = {
     season,
     current_week: input.currentWeek,
     finalized_through_week: scoredThrough,
     regular_season_weeks: regularWeeks,
     season_complete: seasonComplete,
+    playoff_teams: playoffTeams,
+    playoff_byes: playoffTeams < 2 ? 0 : 2 ** Math.ceil(Math.log2(playoffTeams)) - playoffTeams,
+    median_games: medianGames,
   };
+  const vsMedian = medianGames ? medianResults(scoredRegular) : new Map<string, 'W' | 'L' | 'T'>();
 
   const currentTeams: CurrentTeam[] = standings.map((entry) => {
     const team = teamsTable.find((row) => row.roster_id === entry.roster_id) as TeamTableRow;
     const totals = lineupTotals.find((row) => row.roster_id === entry.roster_id);
     const stats = seasonRows.find((row) => row.roster_id === entry.roster_id);
     const odds = forecastOf(entry.roster_id);
+    const maxPf = entry.max_pf_sleeper ?? team.max_pf_calculated;
     return {
       ...entry,
       owner_id: team.owner_id,
+      max_pf: maxPf,
+      bench_points: maxPf === null ? null : round2(Math.max(0, maxPf - entry.points_for)),
+      lineup_efficiency:
+        maxPf === null || maxPf <= 0 ? null : round2((100 * entry.points_for) / maxPf),
       max_pf_calculated: team.max_pf_calculated,
       points_left_on_bench: totals?.bench_gap ?? null,
       efficiency: totals?.efficiency ?? null,
@@ -517,8 +553,15 @@ export function buildSeasonModel(input: SeasonModelInput): SeasonModel {
       playoff_chance_pct: odds?.playoff_chance_pct ?? null,
       position_now: odds?.position_now ?? null,
       playoff_status: odds?.status ?? 'UNAVAILABLE',
+      streak: currentStreak(entry.weeks),
     };
   });
+
+  const liveWeek =
+    !seasonComplete && input.currentWeek > scoredThrough ? input.currentWeek : null;
+  const lineupWeeks = matchupWeeks
+    .map(([week]) => week)
+    .filter((week) => isScored(week) || week === liveWeek);
 
   const current: CurrentDashboard = {
     league: { league_id: leagueId, name: leagueRow.name, season, status: leagueRow.status },
@@ -538,9 +581,17 @@ export function buildSeasonModel(input: SeasonModelInput): SeasonModel {
         weekly_last: row.weekly_low ?? false,
         optimal_points: row.optimal_points,
         bench_gap: row.bench_gap,
+        median_result: vsMedian.get(`${row.week}:${row.roster_id}`) ?? null,
       })),
     records: leagueRecords(scoredRegular),
     trades: { recap, estimates },
+    lineups: teamLineups({
+      weeks: lineupWeeks,
+      liveWeek,
+      playerScores,
+      players: playerRows,
+    }),
+    rosters: rosterSeasons({ teams: teamRows, playerScores: scoredPlayerScores, players: playerRows }),
   };
 
   const withLabels = (rows: BracketSlotRow[]): BracketGameView[] =>

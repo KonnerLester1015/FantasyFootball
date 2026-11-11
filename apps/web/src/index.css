@@ -97,7 +97,7 @@ html {
 @supports not selector(::-webkit-scrollbar) {
   html,
   .table-box,
-  .bracket {
+  .bracket-scroll {
     scrollbar-color: var(--scroll-thumb) var(--track);
   }
 }
@@ -381,7 +381,8 @@ a {
   grid-template-columns: repeat(var(--cols), minmax(0, 1fr));
   gap: 24px;
 }
-.stat-row:has(> :nth-child(3):last-child) {
+.stat-row:has(> :nth-child(3):last-child),
+.stat-row:has(> :nth-child(6):last-child) {
   --cols: 3;
 }
 .stat {
@@ -470,6 +471,96 @@ a {
 }
 .chip-in { background: var(--yellow); }
 .chip-tie { background: var(--butter); }
+.streak {
+  font-family: var(--display);
+  font-size: 20px;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.streak-w { color: var(--blue); }
+.streak-l { color: var(--red); }
+.streak-t { color: var(--brown); }
+.nowrap { white-space: nowrap; }
+.result-w { color: var(--blue); font-weight: 700; }
+.result-l { color: var(--red); font-weight: 700; }
+.result-t { color: var(--brown); font-weight: 700; }
+
+/* Bar detail on hover or focus, styled like the points-bar tooltip. */
+.bar-row:has(.bar-tip) {
+  position: relative;
+  cursor: default;
+}
+.bar-row:focus-visible {
+  outline: 3px solid var(--blue);
+  outline-offset: 3px;
+  border-radius: 8px;
+}
+.bar-tip {
+  position: absolute;
+  bottom: calc(100% + 4px);
+  left: 50%;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 6px 12px;
+  white-space: nowrap;
+  font-size: 16px;
+  line-height: 1.2;
+  color: var(--paper);
+  background: var(--ink);
+  border-radius: var(--r-small);
+  box-shadow: 3px 3px 0 var(--blue);
+  opacity: 0;
+  translate: -50% 6px;
+  pointer-events: none;
+  transition:
+    opacity 0.15s,
+    translate 0.2s var(--spring);
+}
+.bar-tip strong {
+  font-family: var(--display);
+  font-size: 19px;
+  font-weight: 400;
+}
+.bar-tip::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  translate: -50% 0;
+  border: 8px solid transparent;
+  border-top-color: var(--ink);
+}
+.bar-row:hover .bar-tip,
+.bar-row:focus-visible .bar-tip {
+  opacity: 1;
+  translate: -50% 0;
+}
+.team-nav {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+.explainer {
+  margin-top: 16px;
+  font-size: 18px;
+}
+.explainer summary {
+  cursor: pointer;
+  font-family: var(--display);
+  font-size: 21px;
+  color: var(--blue);
+}
+.explainer ol {
+  margin: 10px 0;
+  padding-left: 24px;
+}
+.explainer li + li {
+  margin-top: 6px;
+}
 .chip-out,
 .chip-na { background: var(--track); color: var(--ink); }
 
@@ -536,6 +627,97 @@ a {
   background: #fff;
   border: 3px solid var(--ink);
   border-radius: var(--r-small);
+}
+
+/* ---------------------------------------------------------------- league lookup */
+
+/* Field and its button on one line; the button wraps under on phones. */
+.inline-form {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 0 14px;
+}
+.inline-form .field {
+  flex: 1 1 260px;
+}
+.inline-form .button {
+  margin: 8px 0 14px;
+  min-height: 48px;
+}
+.lookup-note {
+  color: var(--ink-soft);
+}
+.found {
+  margin-top: 6px;
+  padding-top: 16px;
+  border-top: 2px dashed var(--ink);
+}
+.found-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px 18px;
+  margin-bottom: 14px;
+}
+.found-head h3 {
+  margin: 0;
+}
+.season-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.league-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 14px;
+}
+.league-pick {
+  font: inherit;
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 2px 12px;
+  padding: 12px 16px;
+  text-align: left;
+  color: var(--ink);
+  background: #fff;
+  border: var(--line) solid var(--ink);
+  border-radius: var(--r-small);
+  box-shadow: var(--shadow-control);
+  cursor: pointer;
+  transition:
+    transform 0.2s var(--spring),
+    background-color 0.15s;
+}
+.league-pick:hover,
+.league-pick:focus-visible {
+  background: var(--hover);
+  transform: translateY(-2px);
+}
+.league-pick-name {
+  font-family: var(--display);
+  font-size: 24px;
+  line-height: 1.1;
+  overflow-wrap: anywhere;
+}
+.league-pick-meta {
+  grid-column: 1;
+  font-size: 16px;
+  color: var(--ink-soft);
+}
+.league-pick-go {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  font-family: var(--display);
+  font-size: 30px;
+  color: var(--blue);
 }
 
 /* ---------------------------------------------------------------- tables */
@@ -916,38 +1098,98 @@ a {
 
 /* ---------------------------------------------------------------- bracket */
 
-.bracket {
-  display: flex;
-  gap: 40px;
+/* A tree: each node is [feeders column] → [game], so a game is always level
+   with the games feeding it. Lines: each feeder draws its own stub right and
+   half of the vertical spine, so the spine joins at the parent game. */
+.bracket-scroll {
   overflow-x: auto;
   overscroll-behavior-x: contain;
-  padding: 6px 4px 12px;
+  padding: 4px 6px 12px;
 }
-.bracket-round {
+.bracket-tree + .bracket-tree {
+  margin-top: 24px;
+}
+.bt-node {
+  display: flex;
+  align-items: center;
+  width: max-content;
+}
+.bt-feeders {
   display: flex;
   flex-direction: column;
-  justify-content: space-around;
-  gap: 18px;
-  min-width: 220px;
+  margin-right: 56px;
 }
-.bracket-game {
+.bt-feeders > .bt-node {
   position: relative;
-  padding: 10px 14px;
+  padding: 10px 0;
 }
-.bracket-round + .bracket-round .bracket-game::before {
+/* Stub from the feeder game to the spine. */
+.bt-feeders > .bt-node::after {
   content: '';
   position: absolute;
-  left: -42px;
   top: 50%;
-  width: 38px;
-  border-top: 3px dashed var(--ink);
+  right: -28px;
+  width: 28px;
+  border-top: 3px solid var(--ink);
+}
+/* Spine halves: top feeder down from its middle, bottom feeder up to its middle. */
+.bt-feeders:not(.single) > .bt-node:first-child::before,
+.bt-feeders:not(.single) > .bt-node:last-child::before {
+  content: '';
+  position: absolute;
+  right: -28px;
+  border-right: 3px solid var(--ink);
+}
+.bt-feeders:not(.single) > .bt-node:first-child::before {
+  top: 50%;
+  bottom: 0;
+}
+.bt-feeders:not(.single) > .bt-node:last-child::before {
+  top: 0;
+  bottom: 50%;
+  translate: 0 1.5px;
+}
+/* Stub from the spine into the game it feeds. */
+.bt-slot.fed {
+  position: relative;
+}
+.bt-slot.fed::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: -28px;
+  width: 28px;
+  border-top: 3px solid var(--ink);
+}
+.bracket-game {
+  width: 240px;
+  padding: 8px 14px 10px;
+  background: var(--paper);
+  border: var(--line-thick) solid var(--ink);
+  border-radius: var(--r-small);
+  box-shadow: var(--shadow-card);
+}
+.bracket-game.final {
+  background: var(--butter);
+}
+.bracket-caption {
+  margin: 0 0 2px;
+  font-size: 14px;
+  color: var(--ink-soft);
 }
 .bracket-team {
   display: flex;
   justify-content: space-between;
+  align-items: center;
   gap: 8px;
   margin: 0;
   padding: 4px 0;
+}
+.bracket-team > span:first-child {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .bracket-team + .bracket-team {
   border-top: 2px dashed var(--divider);
@@ -955,6 +1197,23 @@ a {
 .bracket-team.won {
   font-weight: 700;
   color: var(--blue);
+}
+.bracket-team.lost {
+  color: var(--ink-soft);
+  text-decoration: line-through;
+  text-decoration-thickness: 1px;
+}
+.bracket-team.tbd {
+  color: var(--ink-soft);
+  font-style: italic;
+}
+.bracket-sub {
+  margin: 22px 0 10px;
+}
+.bracket-placement {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
 }
 
 /* ---------------------------------------------------------------- spinner, 404 */
@@ -1211,6 +1470,206 @@ a {
   box-shadow: var(--shadow-lift);
 }
 
+/* ---------------------------------------------------------------- team roster
+   The same card as the position leaders, a size down, in a grid. */
+
+.roster-group {
+  margin: 22px 0 10px;
+}
+.roster-group small {
+  font-family: var(--body);
+  font-size: 17px;
+  color: var(--ink-soft);
+}
+.player-grid {
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 16px;
+}
+.player-card .leader-art {
+  aspect-ratio: 2 / 1;
+}
+.player-card .leader-badge {
+  font-size: 18px;
+}
+.player-card .leader-points {
+  font-size: 34px;
+}
+.player-card .leader-name {
+  font-size: 20px;
+}
+.player-card .leader-team,
+.player-card .leader-note {
+  font-size: 15px;
+}
+.art-none {
+  background: var(--track);
+}
+.card-flair {
+  position: absolute;
+  top: 4px;
+  right: 8px;
+  font-size: 26px;
+  line-height: 1;
+  filter: drop-shadow(1px 1px 0 var(--ink));
+}
+.leader-points.bench-points {
+  color: var(--ink-soft);
+}
+.leader-note.neutral {
+  color: var(--ink-soft);
+}
+.lineup-summary {
+  font-size: 19px;
+  margin: 0 0 12px;
+}
+.lineup-summary strong {
+  font-family: var(--display);
+  font-size: 22px;
+}
+
+/* Where the starters' points came from: one segment per starter, sized by share.
+   Not overflow-clipped, so the tooltip can rise above the bar; the end
+   segments round their own corners instead. */
+.points-split {
+  display: flex;
+  height: 42px;
+  margin: 18px 0 4px;
+  border: var(--line) solid var(--ink);
+  border-radius: 12px;
+  background: var(--paper);
+}
+.split {
+  position: relative;
+  flex-basis: 0;
+  min-width: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-right: 2px solid var(--ink);
+  container-type: inline-size;
+  cursor: default;
+  animation: grow-in 0.6s var(--spring) both;
+}
+.split:first-child {
+  border-radius: 9px 0 0 9px;
+}
+.split:last-child {
+  border-right: 0;
+  border-radius: 0 9px 9px 0;
+}
+.split:only-child {
+  border-radius: 9px;
+}
+.split[data-active] {
+  box-shadow: inset 0 -6px 0 var(--blue);
+}
+.split-label {
+  font-family: var(--display);
+  font-size: 15px;
+  color: var(--ink);
+}
+/* A label only shows where it fits; the tooltip and cards cover the rest. */
+@container (max-width: 28px) {
+  .split-label {
+    display: none;
+  }
+}
+.split-tip {
+  position: absolute;
+  bottom: calc(100% + 12px);
+  left: 50%;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 6px 12px;
+  white-space: nowrap;
+  font-size: 16px;
+  line-height: 1.2;
+  color: var(--paper);
+  background: var(--ink);
+  border-radius: var(--r-small);
+  box-shadow: 3px 3px 0 var(--blue);
+  opacity: 0;
+  translate: -50% 6px;
+  pointer-events: none;
+  transition:
+    opacity 0.15s,
+    translate 0.2s var(--spring);
+}
+.split-tip strong {
+  font-family: var(--display);
+  font-size: 19px;
+  font-weight: 400;
+}
+.split-tip::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  translate: -50% 0;
+  border: 8px solid transparent;
+  border-top-color: var(--ink);
+}
+.split:first-child .split-tip {
+  left: 0;
+  translate: 0 6px;
+}
+.split:first-child .split-tip::after {
+  left: 18px;
+}
+.split:last-child:not(:first-child) .split-tip {
+  left: auto;
+  right: 0;
+  translate: 0 6px;
+}
+.split:last-child:not(:first-child) .split-tip::after {
+  left: auto;
+  right: 10px;
+  translate: 0 0;
+}
+.split[data-active] .split-tip {
+  opacity: 1;
+  translate: -50% 0;
+}
+.split:first-child[data-active] .split-tip,
+.split:last-child:not(:first-child)[data-active] .split-tip {
+  translate: 0 0;
+}
+.split-hint {
+  margin: 0;
+  font-size: 15px;
+  color: var(--ink-soft);
+}
+.player-grid .player-card[data-active] {
+  translate: 0 -5px;
+  box-shadow: var(--shadow-lift);
+  outline: 3px solid var(--blue);
+  outline-offset: 2px;
+}
+@keyframes grow-in {
+  from {
+    flex-grow: 0;
+  }
+}
+.former {
+  margin-top: 22px;
+  font-size: 18px;
+}
+.former summary {
+  cursor: pointer;
+  font-family: var(--display);
+  font-size: 22px;
+}
+.former ul {
+  margin: 8px 0 0;
+  padding-left: 22px;
+}
+.former .small {
+  color: var(--ink-soft);
+  font-size: 15px;
+}
+
 /* ---------------------------------------------------------------- motion */
 
 @keyframes rise {
@@ -1262,7 +1721,8 @@ a {
 
 @media (max-width: 1000px) {
   .stat-row,
-  .stat-row:has(> :nth-child(3):last-child) {
+  .stat-row:has(> :nth-child(3):last-child),
+  .stat-row:has(> :nth-child(6):last-child) {
     --cols: 2;
   }
 }
@@ -1336,7 +1796,8 @@ a {
     font-size: 16px;
   }
   .stat-row,
-  .stat-row:has(> :nth-child(3):last-child) {
+  .stat-row:has(> :nth-child(3):last-child),
+  .stat-row:has(> :nth-child(6):last-child) {
     --cols: 1;
   }
 }

@@ -45,4 +45,4 @@ export function asOfLabel(iso: string): string {
 }
 
 export const positionLabel = (p: 'inside' | 'outside' | 'tied_at_cutoff' | null): string =>
-  p === 'inside' ? 'In top 6' : p === 'tied_at_cutoff' ? 'Tied at cutoff' : p === 'outside' ? 'Outside' : NA;
+  p === 'inside' ? 'In playoff spot' : p === 'tied_at_cutoff' ? 'Tied at cutoff' : p === 'outside' ? 'Outside' : NA;

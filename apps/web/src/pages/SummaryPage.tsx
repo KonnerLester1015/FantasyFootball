@@ -2,10 +2,10 @@ import { useState, type CSSProperties } from 'react';
 import type { Dashboards } from '../data/loadSeason';
 import { DEF } from '../definitions';
 import { NA, pct, pts, signed } from '../format';
-import { Bars, Bubble, Card, MetricHead, StatCard, WeekPicker, names } from '../ui';
+import { Bubble, Card, StatCard, WeekPicker, names } from '../ui';
 import { OddsBar } from './CurrentPage';
 import { PositionLeaders } from './PositionLeaders';
-import { finalizedWeeks, leaders, PositionChip, TeamLink, teamNames } from './shared';
+import { finalizedWeeks, leaders, PositionChip, ResultText, TeamLink, teamNames } from './shared';
 
 export function SummaryPage({ data }: { data: Dashboards }) {
   const { summary, current } = data;
@@ -34,7 +34,6 @@ export function SummaryPage({ data }: { data: Dashboards }) {
   const blowout = leaders(cells, (c) => (c.result === 'W' ? c.margin : null));
   const nailBiter = leaders(cells, (c) => (c.result === 'W' ? c.margin : null), true);
   const ranked = [...cells].sort((a, b) => b.points - a.points);
-  const maxPoints = Math.max(1, ...cells.map((c) => c.points));
   const summaryTeam = new Map(summary.teams.map((t) => [t.roster_id, t]));
 
   return (
@@ -86,21 +85,6 @@ export function SummaryPage({ data }: { data: Dashboards }) {
         </Card>
       )}
 
-      <Card i={2} className="panel">
-        <MetricHead title={`Week ${week} scores`} def={DEF.highScore} />
-        <Bars
-          label={`Scores in week ${week}`}
-          max={maxPoints}
-          format={pts}
-          data={ranked.map((c) => ({
-            key: c.roster_id,
-            label: `${name(c.roster_id)}${c.weekly_crown ? ' 👑' : ''}${c.weekly_last ? ' 🥄' : ''}`,
-            value: c.points,
-            tone: 'blue',
-          }))}
-        />
-      </Card>
-
       <Card i={3} className="panel" aria-labelledby="recap-table-h">
         <h2 id="recap-table-h">Team by team</h2>
         <div className="table-box">
@@ -127,7 +111,7 @@ export function SummaryPage({ data }: { data: Dashboards }) {
                   <tr key={c.roster_id}>
                     <th scope="row"><TeamLink id={c.roster_id} name={name(c.roster_id)} /></th>
                     <td className="num">{pts(c.points)}</td>
-                    <td>{c.result === 'W' ? 'Win' : c.result === 'L' ? 'Loss' : c.result === 'T' ? 'Tie' : 'Pending'}</td>
+                    <td><ResultText result={c.result} /></td>
                     <td className="num">{signed(c.margin)}</td>
                     <td className="num">{pct(c.all_play_pct)}</td>
                     <td className="num">{pts(c.bench_gap)}</td>

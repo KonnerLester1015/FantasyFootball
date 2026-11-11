@@ -18,6 +18,9 @@ const subscribe = (onChange: () => void) => {
 };
 const fanFits = () => window.matchMedia(FAN_QUERY).matches;
 
+/** True when a six-card fan fits the viewport; narrower screens get a grid. */
+export const useFanFits = (): boolean => useSyncExternalStore(subscribe, fanFits);
+
 const playerName = (cell: PositionLeaderCell): string => cell.leaders[0]?.name ?? 'Unnamed player';
 
 function describe(cell: PositionLeaderCell, name: TeamNames): string {
@@ -73,7 +76,7 @@ export function PositionLeaders({
   leaders: PositionLeadersWeek | undefined;
   name: TeamNames;
 }) {
-  const fan = useSyncExternalStore(subscribe, fanFits);
+  const fan = useFanFits();
   const label = `Week ${week} position leaders`;
 
   return (

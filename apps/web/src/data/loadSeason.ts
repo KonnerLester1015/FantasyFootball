@@ -6,7 +6,7 @@
 import {
   SleeperClient,
   buildSeasonModel,
-  currentSeasonWeek,
+  leagueCurrentWeek,
   partitionSettled,
   seasonLastWeek,
   trimPlayerDictionary,
@@ -25,8 +25,6 @@ export interface Dashboards {
   history: HistoryDashboard;
   playoffs: PlayoffsDashboard;
   summary: SummaryDashboard;
-  /** Trade recaps show players by name, resolved from this season's player dictionary. */
-  playerNames: Map<string, string>;
   generatedAt: string;
   finalizedThroughWeek: number | null;
 }
@@ -114,20 +112,6 @@ async function fetchCurrentSeason(leagueId: string): Promise<RawSeason> {
   };
 }
 
-function playerNamesOf(players: PlayerDictionary): Map<string, string> {
-  return new Map(
-    Object.entries(players).map(([id, player]) => [
-      id,
-      [
-        player.full_name ?? id,
-        player.position && `(${player.position}${player.team ? `, ${player.team}` : ''})`,
-      ]
-        .filter(Boolean)
-        .join(' '),
-    ]),
-  );
-}
-
 /**
  * Every public read model for one league, computed fresh from Sleeper. Only
  * the entered league's own season is fetched; prior seasons are not.
@@ -169,7 +153,7 @@ export async function loadDashboards(leagueId: string): Promise<Dashboards> {
     players,
     playersSyncedAt,
     scoredThroughWeek: current.scoredThroughWeek,
-    currentWeek: currentSeasonWeek(current.league, current.scoredThroughWeek),
+    currentWeek: leagueCurrentWeek(current.league, current.scoredThroughWeek),
     frozenWeeks: new Map(),
     rules: { playoffSim: leagueConfig.playoffSim },
     now,
@@ -181,7 +165,6 @@ export async function loadDashboards(leagueId: string): Promise<Dashboards> {
     history: model.dashboards.history,
     playoffs: model.dashboards.playoffs,
     summary: model.dashboards.summary,
-    playerNames: playerNamesOf(players),
     generatedAt: now.toISOString(),
     finalizedThroughWeek: current.scoredThroughWeek >= 1 ? current.scoredThroughWeek : null,
   };
@@ -191,16 +174,26 @@ export interface FoundLeague {
   league_id: string;
   name: string;
   season: string;
+  status: string;
+  total_rosters: number | null;
 }
 
-/** Leagues a Sleeper username belongs to for a season, for the "find my league" entry flow. */
-export async function findLeaguesForUsername(
-  username: string,
-  season: string,
-): Promise<FoundLeague[]> {
+/** The Sleeper user ID for a username, or null when Sleeper has no such user. */
+export async function findUserId(username: string): Promise<string | null> {
   const trimmed = username.trim();
-  if (trimmed === '') return [];
+  if (trimmed === '') return null;
   const user = await sleeper.getUserByUsername(trimmed);
-  if (!user) return [];
-  return sleeper.getUserLeagues(user.user_id, season);
+  return user?.user_id ?? null;
+}
+
+/** Leagues a Sleeper user belongs to for a season, for the "find my league" entry flow. */
+export async function findLeaguesForUser(userId: string, season: string): Promise<FoundLeague[]> {
+  const leagues = await sleeper.getUserLeagues(userId, season);
+  return (leagues ?? []).map((league) => ({
+    league_id: league.league_id,
+    name: league.name,
+    season: league.season,
+    status: league.status,
+    total_rosters: league.total_rosters ?? null,
+  }));
 }

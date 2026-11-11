@@ -61,6 +61,7 @@ per season · **Sim** = simulation
 | Lowest PF flag        | Fewest actual regular-season PF; ties share                                                                                                                | S    | rosters                                                                |
 | Rank                  | Sleeper order: record, then PF, then PA                                                                                                                    | S    | derived                                                                |
 | Streak                | Run of identical decided results ending with the latest one (`W3`, `L1`); undecided weeks skipped; blank before any decided game                          | S    | matchups                                                               |
+| Rank history          | Standings after every scored regular week, rebuilt from the games: cumulative record (median games included in median leagues), PF, PA, ranked like the standings; ties split by roster id | W→S  | matchups                                                               |
 
 ### 2b. Weekly analytics
 

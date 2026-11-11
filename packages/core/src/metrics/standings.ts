@@ -220,3 +220,71 @@ export function currentStreak(weeks: readonly StandingsWeek[]): Streak | null {
   for (let i = decided.length - 1; i >= 0 && decided[i] === last; i--) length++;
   return { result: last, length };
 }
+
+/** Where one team stood after one week. */
+export interface WeeklyRank {
+  week: number;
+  roster_id: number;
+  /** 1-based, unique: exact ties are split by roster id, as the standings list them. */
+  rank: number;
+  wins: number;
+  losses: number;
+  ties: number;
+  points_for: number;
+}
+
+/**
+ * The standings after every week, rebuilt from the games: cumulative record,
+ * PF and PA through that week, ranked by `standingsCompare`. A median league
+ * passes each week's median results, which count as games like Sleeper's.
+ * Only decided games count; a roster with no game a week keeps its line.
+ */
+export function rankHistory({
+  matchups,
+  rosterIds,
+  medianResults,
+}: {
+  /** Scored regular-season rows. */
+  matchups: readonly MatchupRow[];
+  rosterIds: readonly number[];
+  /** `week:roster_id` -> result against the median, for median leagues. */
+  medianResults?: ReadonlyMap<string, 'W' | 'L' | 'T'>;
+}): WeeklyRank[] {
+  const totals = new Map(
+    rosterIds.map((id) => [id, { wins: 0, losses: 0, ties: 0, points_for: 0, points_against: 0 }]),
+  );
+  const weeks = [...new Set(matchups.map((row) => row.week))].sort((a, b) => a - b);
+  const count = (team: { wins: number; losses: number; ties: number }, result: string) => {
+    if (result === 'W') team.wins += 1;
+    else if (result === 'L') team.losses += 1;
+    else if (result === 'T') team.ties += 1;
+  };
+
+  return weeks.flatMap((week) => {
+    for (const row of matchups) {
+      const team = totals.get(row.roster_id);
+      if (row.week !== week || !team || row.result === 'PENDING') continue;
+      count(team, row.result);
+      team.points_for += row.points;
+      team.points_against += row.opponent_points ?? 0;
+      const median = medianResults?.get(`${week}:${row.roster_id}`);
+      if (median) count(team, median);
+    }
+    const ordered = [...totals.entries()].sort(
+      ([idA, a], [idB, b]) =>
+        standingsCompare(
+          { ...a, points_for: round2(a.points_for), points_against: round2(a.points_against) },
+          { ...b, points_for: round2(b.points_for), points_against: round2(b.points_against) },
+        ) || idA - idB,
+    );
+    return ordered.map(([roster_id, team], index) => ({
+      week,
+      roster_id,
+      rank: index + 1,
+      wins: team.wins,
+      losses: team.losses,
+      ties: team.ties,
+      points_for: round2(team.points_for),
+    }));
+  });
+}

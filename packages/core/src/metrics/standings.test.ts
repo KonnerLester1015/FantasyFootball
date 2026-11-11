@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   buildStandings,
   currentStreak,
+  rankHistory,
   recordPct,
   standingsCompare,
   type StandingsInput,
@@ -351,5 +352,59 @@ describe('currentStreak', () => {
   it('is blank before any decided game', () => {
     expect(currentStreak([])).toBeNull();
     expect(currentStreak([week(1, 'PENDING')])).toBeNull();
+  });
+});
+
+describe('rankHistory', () => {
+  const game = (week: number, roster_id: number, points: number, opponent: number, opponentPoints: number) => ({
+    $id: `${week}_${roster_id}`,
+    league_id: 'L',
+    week,
+    roster_id,
+    matchup_id: 1,
+    opponent_roster_id: opponent,
+    points,
+    custom_points: null,
+    opponent_points: opponentPoints,
+    margin: points - opponentPoints,
+    result: (points > opponentPoints ? 'W' : points < opponentPoints ? 'L' : 'T') as 'W' | 'L' | 'T',
+    starters: [],
+    players: [],
+  });
+  const rows = [
+    game(1, 1, 100, 2, 90),
+    game(1, 2, 90, 1, 100),
+    game(1, 3, 80, 4, 120),
+    game(1, 4, 120, 3, 80),
+    game(2, 1, 70, 3, 110),
+    game(2, 3, 110, 1, 70),
+    game(2, 2, 95, 4, 60),
+    game(2, 4, 60, 2, 95),
+  ];
+  const ranksAt = (history: ReturnType<typeof rankHistory>, week: number) =>
+    history
+      .filter((row) => row.week === week)
+      .sort((a, b) => a.rank - b.rank)
+      .map((row) => row.roster_id);
+
+  it('ranks by cumulative record, then points for, week by week', () => {
+    const history = rankHistory({ matchups: rows, rosterIds: [1, 2, 3, 4] });
+    // Week 1: 4 (1-0, 120) and 1 (1-0, 100) lead.
+    expect(ranksAt(history, 1)).toEqual([4, 1, 2, 3]);
+    // Week 2: everyone 1-1; PF decides: 4 180, 2 185, 3 190, 1 170.
+    expect(ranksAt(history, 2)).toEqual([3, 2, 4, 1]);
+    expect(history.find((r) => r.week === 2 && r.roster_id === 3)).toMatchObject({ wins: 1, losses: 1, points_for: 190 });
+  });
+
+  it('counts the weekly median game in a median league', () => {
+    const median = new Map<string, 'W' | 'L' | 'T'>([
+      ['1:1', 'W'],
+      ['1:2', 'L'],
+      ['1:3', 'L'],
+      ['1:4', 'W'],
+    ]);
+    const history = rankHistory({ matchups: rows.filter((r) => r.week === 1), rosterIds: [1, 2, 3, 4], medianResults: median });
+    expect(history.find((r) => r.roster_id === 1)).toMatchObject({ wins: 2, losses: 0 });
+    expect(history.find((r) => r.roster_id === 3)).toMatchObject({ wins: 0, losses: 2 });
   });
 });

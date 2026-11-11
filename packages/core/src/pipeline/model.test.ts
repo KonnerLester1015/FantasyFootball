@@ -56,6 +56,16 @@ describe('buildSeasonModel on the 2026 fixtures through week 4', () => {
     expect(diff).toEqual([]);
   });
 
+  it('ends the weekly rank history in the same order as the standings', () => {
+    const { rank_history: history, teams, as_of } = model.dashboards.current;
+    const last = history
+      .filter((row) => row.week === as_of.finalized_through_week)
+      .sort((x, y) => x.rank - y.rank)
+      .map((row) => row.roster_id);
+    expect(last).toEqual(teams.map((team) => team.roster_id));
+    expect(new Set(history.map((row) => row.week))).toEqual(new Set([1, 2, 3, 4]));
+  });
+
   it('is deterministic, so a re-run replaces rows with identical ones', () => {
     expect(JSON.stringify(buildSeasonModel(input()))).toBe(JSON.stringify(model));
   });

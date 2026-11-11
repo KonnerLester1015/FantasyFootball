@@ -29,6 +29,11 @@
   --yellow: #f2c230;
   --butter: #f6d77a;
   --red: #b3402a;
+  /* Highlight colors for picked series (standings chart). Checked as a set for
+     color-blind separation against --paper; keep them in this order. */
+  --pick-1: #2f6db5;
+  --pick-2: #d0601c;
+  --pick-3: #6a3fa0;
   --track: #eadfcb;
   --hover: #fff0c2;
   --divider: #cdbb9f;
@@ -1468,6 +1473,141 @@ a {
 .leader-grid .bounce-card:focus {
   translate: 0 -5px;
   box-shadow: var(--shadow-lift);
+}
+
+/* ---------------------------------------------------------------- standings race
+   Bump chart: muted lines at rest, picked teams lit in --pick colors. */
+
+.race-scroll {
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  margin-top: 8px;
+}
+.race-box {
+  position: relative;
+  min-width: 640px;
+}
+.race {
+  display: block;
+  width: 100%;
+  height: auto;
+  font-family: var(--body);
+}
+.race-grid {
+  stroke: var(--track);
+  stroke-width: 1.5;
+}
+.race-axis {
+  fill: var(--ink-soft);
+  font-size: 15px;
+}
+.race-line {
+  fill: none;
+  stroke: var(--ink-soft);
+  stroke-width: 2;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+  opacity: 0.4;
+  transition:
+    opacity 0.2s,
+    stroke-width 0.2s;
+}
+.race-hit {
+  fill: none;
+  stroke: transparent;
+  stroke-width: 16;
+  stroke-linejoin: round;
+  cursor: pointer;
+  pointer-events: stroke;
+}
+.race-label {
+  fill: var(--ink-soft);
+  font-size: 15px;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+.race-team.dim .race-line {
+  opacity: 0.12;
+}
+.race-team.dim .race-label {
+  opacity: 0.45;
+}
+.race-team.lit .race-line {
+  stroke: var(--c);
+  stroke-width: 4;
+  opacity: 1;
+}
+.race-team.lit .race-label {
+  fill: var(--ink);
+  font-weight: 700;
+}
+.race-dot {
+  fill: var(--c);
+  stroke: var(--paper);
+  stroke-width: 2;
+}
+.race-tip {
+  position: absolute;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  padding: 6px 12px;
+  white-space: nowrap;
+  font-size: 15px;
+  line-height: 1.2;
+  color: var(--paper);
+  background: var(--ink);
+  border-radius: var(--r-small);
+  box-shadow: 3px 3px 0 var(--blue);
+  --tx: -50%;
+  translate: var(--tx) calc(-100% - 14px);
+  pointer-events: none;
+}
+.race-tip.below {
+  translate: var(--tx) 14px;
+}
+.race-tip.from-left {
+  --tx: -12px;
+}
+.race-tip.from-right {
+  --tx: calc(-100% + 12px);
+}
+.race-tip strong {
+  font-family: var(--display);
+  font-size: 18px;
+  font-weight: 400;
+}
+.race-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+.race-chip {
+  font: inherit;
+  font-size: 16px;
+  min-height: 38px;
+  padding: 4px 12px 4px 10px;
+  color: var(--ink);
+  background: var(--paper);
+  border: var(--line-thin) solid var(--ink);
+  border-left: 8px solid var(--c, var(--track));
+  border-radius: 10px;
+  cursor: pointer;
+  transition:
+    transform 0.2s var(--spring),
+    background-color 0.15s;
+}
+.race-chip:hover {
+  transform: translateY(-2px);
+}
+.race-chip[aria-pressed='true'] {
+  background: var(--butter);
+  font-weight: 700;
+}
+.race-chip.clear {
+  border-left-width: var(--line-thin);
+  color: var(--ink-soft);
 }
 
 /* ---------------------------------------------------------------- team roster

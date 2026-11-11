@@ -199,3 +199,24 @@ export function buildStandings({
     };
   });
 }
+
+export interface Streak {
+  result: 'W' | 'L' | 'T';
+  /** Consecutive decided games with that result, ending with the latest one. */
+  length: number;
+}
+
+/**
+ * The run of identical results a team is on now. Undecided weeks (byes, a week
+ * still being played) neither extend nor break it. Null before any decided game.
+ */
+export function currentStreak(weeks: readonly StandingsWeek[]): Streak | null {
+  const decided = [...weeks]
+    .sort((a, b) => a.week - b.week)
+    .flatMap((week) => (week.result === 'PENDING' ? [] : [week.result]));
+  const last = decided.at(-1);
+  if (last === undefined) return null;
+  let length = 0;
+  for (let i = decided.length - 1; i >= 0 && decided[i] === last; i--) length++;
+  return { result: last, length };
+}

@@ -221,6 +221,7 @@ export function seededRandom(seed: number): () => number {
 interface Game {
   a: number;
   b: number;
+  week: number;
 }
 
 /** A team mid-simulation. PF and PA are whole cents so sums stay exact. */
@@ -277,11 +278,12 @@ export function forecastPlayoffs({
   if (!seats || seats > teams.length) issues.push('No supported playoff-team count');
   if (settings.customSeeding) issues.push('Custom playoff seeding needs a league-specific model');
   if (settings.divisions) issues.push('Division qualification is not modeled');
-  if (settings.medianGames) issues.push('Extra league-median games are not modeled');
 
   const scoredThrough = Math.min(finalizedThroughWeek, regularEnd);
   const regular = matchups.filter((row) => row.week <= scoredThrough && DECIDED.has(row.result));
   const expectedPlayed = Math.max(0, scoredThrough - start + 1);
+  // A median league plays the league median every week as well: two official games a week.
+  const gamesPerWeek = settings.medianGames ? 2 : 1;
   for (const team of teams) {
     const observed = matchups.filter(
       (row) => row.roster_id === team.roster_id && row.week >= start && row.week <= scoredThrough,
@@ -289,7 +291,7 @@ export function forecastPlayoffs({
     if (
       observed.length !== expectedPlayed ||
       observed.some((row) => !DECIDED.has(row.result)) ||
-      team.wins + team.losses + team.ties !== expectedPlayed
+      team.wins + team.losses + team.ties !== expectedPlayed * gamesPerWeek
     ) {
       issues.push(`Finalized matchup coverage/official record mismatch for ${team.manager_name}`);
     }
@@ -299,6 +301,11 @@ export function forecastPlayoffs({
   }
 
   for (let week = Math.max(start, finalizedThroughWeek + 1); week <= regularEnd; week += 1) {
+    if (settings.medianGames) {
+      teams.forEach((_team, index) => {
+        remaining[index] = (remaining[index] as number) + 1;
+      });
+    }
     const groups = new Map<number, MatchupRow[]>();
     const seen = new Set<number>();
     for (const row of matchups.filter((entry) => entry.week === week)) {
@@ -321,7 +328,7 @@ export function forecastPlayoffs({
       const a = indexOf.get((group[0] as MatchupRow).roster_id);
       const b = indexOf.get((group[1] as MatchupRow).roster_id);
       if (a === undefined || b === undefined || a === b) continue;
-      games.push({ a, b });
+      games.push({ a, b, week });
       remaining[a] = (remaining[a] as number) + 1;
       remaining[b] = (remaining[b] as number) + 1;
     }
@@ -390,11 +397,44 @@ export function forecastPlayoffs({
       coin: random(),
       index,
     }));
-    for (const { a, b } of games) {
+    const scores = new Map<number, number[]>();
+    const settleMedian = (week: number) => {
+      const played = scores.get(week);
+      if (!settings.medianGames || !played) return;
+      // Sleeper's median game: beat the league median that week for a win.
+      const sorted = [...played].sort((x, y) => x - y);
+      const mid = sorted.length / 2;
+      const median =
+        sorted.length % 2 === 1
+          ? (sorted[Math.floor(mid)] as number)
+          : ((sorted[mid - 1] as number) + (sorted[mid] as number)) / 2;
+      played.forEach((points, index) => {
+        const team = simulated[index] as SimTeam;
+        if (points > median) {
+          team.wins += 1;
+          team.added_wins += 1;
+        } else if (points < median) {
+          team.losses += 1;
+        } else {
+          team.ties += 1;
+          team.added_ties += 1;
+        }
+      });
+    };
+    let week = games[0]?.week ?? 0;
+    for (const { a, b, week: gameWeek } of games) {
+      if (gameWeek !== week) {
+        settleMedian(week);
+        week = gameWeek;
+      }
       const home = simulated[a] as SimTeam;
       const away = simulated[b] as SimTeam;
       const homePoints = draw(a);
       const awayPoints = draw(b);
+      const weekScores = scores.get(gameWeek) ?? teams.map(() => 0);
+      weekScores[a] = homePoints;
+      weekScores[b] = awayPoints;
+      scores.set(gameWeek, weekScores);
       home.points_for += homePoints;
       away.points_for += awayPoints;
       home.points_against += awayPoints;
@@ -414,6 +454,7 @@ export function forecastPlayoffs({
         away.added_ties += 1;
       }
     }
+    settleMedian(week);
     const ordered = simulated.slice().sort((x, y) => standingsCompare(x, y) || x.coin - y.coin);
     const inside = new Set(ordered.slice(0, seats).map((team) => team.index));
     cutoffs.push((ordered[seats - 1] as SimTeam).wins);

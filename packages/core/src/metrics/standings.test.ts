@@ -1,5 +1,12 @@
 import { describe, expect, it } from 'vitest';
-import { buildStandings, recordPct, standingsCompare, type StandingsInput } from './standings';
+import {
+  buildStandings,
+  currentStreak,
+  recordPct,
+  standingsCompare,
+  type StandingsInput,
+  type StandingsWeek,
+} from './standings';
 import { round2 } from '../numbers';
 import { buildTeamRows, type TeamRow } from '../normalize/rosters';
 import { buildIdentityIndex } from '../normalize/users';
@@ -313,5 +320,36 @@ describe('buildStandings — weekly scores, opponents and margins', () => {
 
     expect(team?.weeks.map((week) => week.week)).toEqual([...FINALIZED_WEEKS]);
     expect(team?.total_pf_finalized).toBeCloseTo(goldenTeam(1).pf, 2);
+  });
+});
+
+describe('currentStreak', () => {
+  const week = (n: number, result: StandingsWeek['result']): StandingsWeek => ({
+    week: n,
+    points: 100,
+    opponent_roster_id: 2,
+    opponent_points: 90,
+    margin: 10,
+    result,
+  });
+
+  it('counts the run ending with the latest decided game', () => {
+    expect(currentStreak([week(1, 'L'), week(2, 'W'), week(3, 'W'), week(4, 'W')])).toEqual({
+      result: 'W',
+      length: 3,
+    });
+    expect(currentStreak([week(1, 'W'), week(2, 'L')])).toEqual({ result: 'L', length: 1 });
+  });
+
+  it('skips undecided weeks and reads weeks in order', () => {
+    expect(currentStreak([week(3, 'PENDING'), week(2, 'W'), week(1, 'W')])).toEqual({
+      result: 'W',
+      length: 2,
+    });
+  });
+
+  it('is blank before any decided game', () => {
+    expect(currentStreak([])).toBeNull();
+    expect(currentStreak([week(1, 'PENDING')])).toBeNull();
   });
 });

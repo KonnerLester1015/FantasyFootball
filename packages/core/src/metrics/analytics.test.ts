@@ -4,7 +4,7 @@ import golden from '../../../../fixtures/golden/2026-through-week-04.json';
 import { round2 } from '../numbers';
 import { buildMatchupRows, type MatchupRow } from '../normalize/matchups';
 import { FINALIZED_WEEKS, league, matchups } from '../test-fixtures';
-import { leagueRecords, seasonAnalytics, weeklyAnalytics } from './analytics';
+import { leagueRecords, medianResults, seasonAnalytics, weeklyAnalytics } from './analytics';
 
 /**
  * Weekly analytics — docs/REBUILD_PLAN.md §2b.
@@ -312,6 +312,23 @@ describe('leagueRecords', () => {
     expect(records.largest_margin).toEqual([]);
     expect(records.narrowest_victory).toEqual([]);
     expect(records.highest_scoring_loss).toEqual([]);
+    expect(records.highest_score).toEqual([]);
+    expect(records.lowest_score).toEqual([]);
+  });
+
+  it('reports the single-week high and low score, sharing ties', () => {
+    const records = leagueRecords([
+      ...pair(1, { roster_id: 1, points: 130 }, { roster_id: 2, points: 90 }, 1),
+      ...pair(2, { roster_id: 3, points: 175.5 }, { roster_id: 4, points: 90 }, 2),
+    ]);
+
+    expect(records.highest_score).toEqual([
+      { roster_id: 3, opponent_roster_id: 4, week: 2, value: 175.5 },
+    ]);
+    expect(records.lowest_score.map((h) => [h.roster_id, h.week])).toEqual([
+      [2, 1],
+      [4, 2],
+    ]);
   });
 });
 
@@ -520,5 +537,26 @@ describe('weekly analytics — fixtures/golden, to 2 decimals', () => {
     // up to half a cent of rounding per team rather than landing exactly on 0.
     const stored = season.reduce((sum, entry) => sum + (entry.schedule_luck ?? 0), 0);
     expect(Math.abs(stored)).toBeLessThanOrEqual(0.005 * season.length);
+  });
+});
+
+describe('medianResults', () => {
+  it('wins above the week median, loses below, ties on it', () => {
+    const results = medianResults([
+      ...pair(1, { roster_id: 1, points: 150 }, { roster_id: 2, points: 90 }, 1),
+      ...pair(1, { roster_id: 3, points: 120 }, { roster_id: 4, points: 100 }, 2),
+      ...pair(2, { roster_id: 1, points: 80 }, { roster_id: 2, points: 100 }, 1),
+      { ...row({ week: 2, roster_id: 3 }), points: 100 },
+    ]);
+
+    expect(Object.fromEntries(results)).toEqual({
+      '1:1': 'W',
+      '1:2': 'L',
+      '1:3': 'W',
+      '1:4': 'L',
+      '2:1': 'L',
+      '2:2': 'T',
+      '2:3': 'T',
+    });
   });
 });

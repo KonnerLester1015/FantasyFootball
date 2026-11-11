@@ -118,6 +118,10 @@ export interface LeagueRecords {
   narrowest_victory: RecordHolder[];
   /** Most points scored in a game that was still lost. */
   highest_scoring_loss: RecordHolder[];
+  /** Highest single-week score among the rows handed in, byes included. */
+  highest_score: RecordHolder[];
+  /** Lowest single-week score among the rows handed in, byes included. */
+  lowest_score: RecordHolder[];
 }
 
 /** Group rows by week, preserving week order. */
@@ -265,7 +269,7 @@ function holdersOf(
 }
 
 /**
- * The margin record book.
+ * The margin record book, plus the single-week high and low score.
  *
  * A victory needs a positive margin, which is what keeps a tie out of both
  * margin records (legacy rule, reference/legacy/Redraft.gs:719).
@@ -278,5 +282,32 @@ export function leagueRecords(matchups: readonly MatchupRow[]): LeagueRecords {
     largest_margin: holdersOf(wins, (game) => game.margin ?? 0, 'max'),
     narrowest_victory: holdersOf(wins, (game) => game.margin ?? 0, 'min'),
     highest_scoring_loss: holdersOf(losses, (game) => game.points, 'max'),
+    highest_score: holdersOf(matchups, (game) => game.points, 'max'),
+    lowest_score: holdersOf(matchups, (game) => game.points, 'min'),
   };
+}
+
+/**
+ * Each roster's result against the league median, per week, for leagues where
+ * Sleeper's `league_average_match` adds that game. Above the median is a win,
+ * below a loss, exactly on it a tie. Key: `week:roster_id`.
+ */
+export function medianResults(matchups: readonly MatchupRow[]): Map<string, 'W' | 'L' | 'T'> {
+  const results = new Map<string, 'W' | 'L' | 'T'>();
+  for (const [week, rows] of byWeek(matchups)) {
+    const sorted = rows.map((row) => row.points).sort((a, b) => a - b);
+    if (sorted.length < 2) continue;
+    const mid = sorted.length / 2;
+    const median =
+      sorted.length % 2 === 1
+        ? (sorted[Math.floor(mid)] as number)
+        : ((sorted[mid - 1] as number) + (sorted[mid] as number)) / 2;
+    for (const row of rows) {
+      results.set(
+        `${week}:${row.roster_id}`,
+        row.points > median ? 'W' : row.points < median ? 'L' : 'T',
+      );
+    }
+  }
+  return results;
 }

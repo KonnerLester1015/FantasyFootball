@@ -233,6 +233,8 @@ export interface BarDatum {
   /** Second series drawn as a thinner bar under the first (e.g. best lineup). */
   ghost?: number | null;
   tone: 'blue' | 'brown' | 'red' | 'ink' | 'none';
+  /** Extra context shown in a tooltip on hover or focus, e.g. "1,168 of 1,268". */
+  note?: string;
 }
 
 export function Bars({
@@ -258,7 +260,7 @@ export function Bars({
       {data.map((d, n) => {
         const style = { '--i': n } as CSSProperties;
         return (
-          <li key={d.key} className="bar-row" style={style}>
+          <li key={d.key} className="bar-row" style={style} tabIndex={d.note ? 0 : undefined}>
             <span className="bar-label">{d.label}</span>
             <span className="bar-track">
               {d.value !== null && (
@@ -275,6 +277,12 @@ export function Bars({
               {format(d.value)}
               {ghostFormat && d.ghost !== undefined && <small> / {ghostFormat(d.ghost ?? null)}</small>}
             </span>
+            {d.note && (
+              <span className="bar-tip">
+                <strong>{format(d.value)}</strong>
+                <span>{d.note}</span>
+              </span>
+            )}
           </li>
         );
       })}

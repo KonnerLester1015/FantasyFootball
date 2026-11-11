@@ -55,10 +55,12 @@ per season · **Sim** = simulation
 | PF, PA, PF−PA         | `fpts + fpts_decimal/100`, same for `fpts_against`                                                                                                         | R    | rosters                                                                |
 | Max PF (Sleeper)      | `ppts + ppts_decimal/100`; regular season, includes taxi                                                                                                   | R    | rosters                                                                |
 | Max PF (calculated)   | Sum per finalized regular week of the best full lineup — every starting slot filled, including when the best player available for a slot scored below zero | W→S  | matchups `players_points`, player positions, `league.roster_positions` |
+| Max PF (shown)        | The one season Max PF the site shows (`max_pf`): Sleeper's, or the calculated one when Sleeper reports none. Season bench points = Max PF − PF; lineup efficiency = PF / Max PF. Weekly bench gaps still come from the calculated per-week lineup, since Sleeper has no weekly number | S    | derived                                                                |
 | Total PF finalized    | Sum of actual matchup points (honors `custom_points`)                                                                                                      | W→S  | matchups                                                               |
 | Games left            | Regular-season games − finalized                                                                                                                           | S    | league settings, matchups                                              |
 | Lowest PF flag        | Fewest actual regular-season PF; ties share                                                                                                                | S    | rosters                                                                |
 | Rank                  | Sleeper order: record, then PF, then PA                                                                                                                    | S    | derived                                                                |
+| Streak                | Run of identical decided results ending with the latest one (`W3`, `L1`); undecided weeks skipped; blank before any decided game                          | S    | matchups                                                               |
 
 ### 2b. Weekly analytics
 
@@ -74,6 +76,7 @@ per season · **Sim** = simulation
 | Weeks > 150, weeks > 200                         | Strictly greater than                                                                                                                                         | W→S  |
 | Largest winning margin / narrowest victory       | Over all finalized games; name winner, opponent, week                                                                                                         | W    |
 | Highest-scoring loss, points scored in losses    | Per game / summed                                                                                                                                             | W→S  |
+| Season high / low score                          | Highest / lowest single regular-season week so far; ties share; name team and week (`records.highest_score` / `lowest_score`)                                 | W    |
 
 ### 2c. Playoff model
 
@@ -87,6 +90,14 @@ per season · **Sim** = simulation
 
 Forecasts are withheld (shown as N/A) for incomplete schedules, missing PF/PA,
 divisions, or non-standard seeding.
+
+**Median leagues** (`settings.league_average_match`): every week is two
+official games, head-to-head plus one against the league median. The
+simulation settles each remaining week's median game from that week's
+simulated scores (above the median wins, below loses, on it ties), and
+`recordBounds` counts two games a week. Official records must then show two
+games per scored week, or the forecast is withheld. The team page shows each
+week's median result; streaks, schedule luck and margins stay head-to-head.
 
 ### 2d. Activity, trades, draft
 
@@ -129,6 +140,16 @@ position (QB, RB, WR, TE, K, DEF, by the player dictionary's primary
 bench included. Ties keep every leader, ordered by name. A null score is
 unobserved and skipped; a position where nobody has a score has no leader
 (shown as "No score yet"), never 0.
+
+### 2h. Team roster
+
+`metrics/roster.ts`, stored on the current read model as `lineups` and `rosters`.
+
+| Metric          | Definition                                                                                                                              | Tier |
+| --------------- | --------------------------------------------------------------------------------------------------------------------------------------- | ---- |
+| Weekly lineup   | Every roster's players per scored week plus the live one: slot, points, best-lineup flag (never set on a live week); starters in slot order | W    |
+| Player season   | Per roster: points while started, points incl. bench, starts, weeks rostered, current roster status; blank (not 0) when never scored    | S    |
+| Team MVP        | Most started points at each card position (QB, RB, WR, TE, K, DEF) for that roster; former players count                                | S    |
 
 ---
 
